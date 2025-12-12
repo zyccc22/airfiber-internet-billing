@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing Reminder - Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    header {
+      background-color: #232f3e;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .user-info {
+      font-size: 14px;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .client-form input,
+    .client-form select {
+      margin-right: 8px;
+      margin-bottom: 8px;
+      padding: 6px;
+      font-size: 14px;
+    }
+
+    .client-form button {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      background-color: #ff9900;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      text-align: left;
+    }
+
+    .send-btn,
+    .delete-btn,
+    .action-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: #0073bb;
+      color: white;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+
+    .delete-btn {
+      background-color: #b80000;
+    }
+
+    .send-btn:disabled,
+    .action-btn:disabled {
+      background-color: #aaa;
+      cursor: default;
+    }
+
+    .paid-checkbox {
+      transform: scale(1.2);
+    }
+
+    .status-pill {
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: white;
+      display: inline-block;
+    }
+
+    .status-pending {
+      background-color: #ff9900;
+    }
+
+    .status-paid {
+      background-color: #28a745;
+    }
+
+    .status-disconnected {
+      background-color: #b80000;
+    }
+
+    small {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Billing Reminder Dashboard</h1>
+    <div class="user-info">
+      Logged in as: <strong>Admin</strong>
+    </div>
+  </header>
+
+  <main>
+    <!-- Global billing date -->
+    <div class="card">
+      <h2>Set Billing Date for All Clients</h2>
+      <div class="client-form">
+        <input type="date" id="globalDueDate" />
+        <button id="applyGlobalDueDateBtn">Apply to All Clients</button>
+      </div>
+      <small>Pick the billing date (e.g. 2025-02-26). This will update the due date of every client, without changing their devices or other details.</small>
+    </div>
+
+    <div class="card">
+      <h2>Add Client</h2>
+      <div class="client-form">
+        <input type="text" id="clientName" placeholder="Client Name" />
+        <input type="email" id="clientEmail" placeholder="Email Address" />
+        <input type="text" id="clientPhone" placeholder="Device MAC (optional)" />
+        <input type="text" id="clientAmount" placeholder="Amount Due" />
+        <input type="date" id="clientDueDate" />
+
+        <select id="clientWifi">
+          <option value="">Select WiFi</option>
+          <option value="WiFi 1">WiFi 1</option>
+          <option value="WiFi 2">WiFi 2</option>
+          <option value="WiFi 3">WiFi 3</option>
+          <option value="WiFi 4">WiFi 4</option>
+          <option value="Extension">Extension</option>
+        </select>
+
+        <button id="addClientBtn">Add Client</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>All Clients</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Client Name</th>
+            <th>Email</th>
+            <th>Device MAC</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>WiFi</th>
+            <th>Status</th>
+            <th>Paid?</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="clientTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>FOR DISCONNECTION (Overdue & Not Paid)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Client Name</th>
+            <th>Email</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>WiFi</th>
+            <th>Device MAC</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="disconnectTableBody">
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const addClientBtn = document.getElementById('addClientBtn');
+    const applyGlobalDueDateBtn = document.getElementById('applyGlobalDueDateBtn');
+    const tableBody = document.getElementById('clientTableBody');
+    const disconnectBody = document.getElementById('disconnectTableBody');
+
+    let clients = [];
+
+    function isOverdue(client) {
+      if (!client.dueDate) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(client.dueDate);
+      due.setHours(0, 0, 0, 0);
+      return due < today && client.status !== 'paid';
+    }
+
+    function buildEmailMessage(client, type) {
+      if (type === 'reminder') {
+        return `
+Hello ${client.name},
+
+This is a friendly reminder that your bill of ₱${client.amount} for ${client.wifi} is due on ${client.dueDate}.
+
+If you have already paid, please ignore this message.
+
+Thank you!
+        `.trim();
+      } else if (type === 'receipt') {
+        return `
+Hello ${client.name},
+
+We have received your payment of ₱${client.amount} for ${client.wifi} (due date ${client.dueDate}).
+
+Thank you for your payment!
+
+Best regards,
+AirFiber Internet Billing
+        `.trim();
+      } else {
+        return `
+Hello ${client.name},
+
+Our records show that your bill of ₱${client.amount} for ${client.wifi}, due on ${client.dueDate}, is now overdue.
+
+Your connection is scheduled FOR DISCONNECTION if payment is not received as soon as possible.
+
+If you have already paid, please contact us with your payment details.
+
+Thank you.
+        `.trim();
+      }
+    }
+
+    async function sendEmail(client, type, button) {
+      const subject =
+        type === 'reminder'
+          ? 'Billing Reminder'
+          : type === 'receipt'
+          ? 'Payment Receipt'
+          : 'Disconnection Notice';
+
+      const message = buildEmailMessage(client, type);
+
+      button.disabled = true;
+      button.textContent = 'Sending...';
+
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: client.email,
+            subject,
+            message,
+            type,
+            client
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(`${subject} sent to ${client.name} at ${client.email}`);
+        } else {
+          console.error(result);
+          alert('Failed to send email: ' + (result.error || 'Unknown error'));
+          button.disabled = false;
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error sending email. Please check your internet connection or server.');
+        button.disabled = false;
+      } finally {
+        if (type === 'reminder') button.textContent = 'Send Reminder';
+        if (type === 'receipt') button.textContent = 'Send Receipt';
+        if (type === 'disconnection') button.textContent = 'Disconnection Notice';
+      }
+    }
+
+    async function updateStatus(client, newStatus) {
+      try {
+        const response = await fetch(`/api/clients/${client.id}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          console.error(result);
+          alert('Failed to update status: ' + (result.error || 'Unknown error'));
+          return false;
+        }
+        client.status = newStatus;
+        return true;
+      } catch (err) {
+        console.error(err);
+        alert('Error updating status. Please check your server.');
+        return false;
+      }
+    }
+
+    async function deleteClient(client) {
+      if (!confirm(`Delete client ${client.name}?`)) return;
+      try {
+        const response = await fetch(`/api/clients/${client.id}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          console.error(result);
+          alert('Failed to delete client: ' + (result.error || 'Unknown error'));
+          return;
+        }
+        clients = clients.filter(c => c.id !== client.id);
+        renderClients();
+      } catch (err) {
+        console.error(err);
+        alert('Error deleting client. Please check your server.');
+      }
+    }
+
+    function createStatusPill(status) {
+      const span = document.createElement('span');
+      span.classList.add('status-pill');
+      if (status === 'paid') {
+        span.classList.add('status-paid');
+        span.textContent = 'PAID';
+      } else if (status === 'disconnected') {
+        span.classList.add('status-disconnected');
+        span.textContent = 'DISCONNECTED';
+      } else {
+        span.classList.add('status-pending');
+        span.textContent = 'PENDING';
+      }
+      return span;
+    }
+
+    function addClientRow(client) {
+      const row = document.createElement('tr');
+
+      const nameTd = document.createElement('td');
+      nameTd.textContent = client.name;
+
+      const emailTd = document.createElement('td');
+      emailTd.textContent = client.email;
+
+      const macTd = document.createElement('td');
+      macTd.textContent = client.phone || '';
+
+      const amountTd = document.createElement('td');
+      amountTd.textContent = client.amount;
+
+      const dueTd = document.createElement('td');
+      dueTd.textContent = client.dueDate;
+
+      const wifiTd = document.createElement('td');
+      wifiTd.textContent = client.wifi;
+
+      const statusTd = document.createElement('td');
+      statusTd.appendChild(createStatusPill(client.status || 'pending'));
+
+      const paidTd = document.createElement('td');
+      const paidCheckbox = document.createElement('input');
+      paidCheckbox.type = 'checkbox';
+      paidCheckbox.classList.add('paid-checkbox');
+      paidCheckbox.checked = client.status === 'paid';
+      paidCheckbox.addEventListener('change', async () => {
+        const newStatus = paidCheckbox.checked ? 'paid' : 'pending';
+        const ok = await updateStatus(client, newStatus);
+        if (!ok) {
+          paidCheckbox.checked = !paidCheckbox.checked;
+        } else {
+          renderClients();
+        }
+      });
+      paidTd.appendChild(paidCheckbox);
+
+      const actionsTd = document.createElement('td');
+
+      const mainActionBtn = document.createElement('button');
+      mainActionBtn.classList.add('action-btn');
+
+      if (client.status === 'paid') {
+        mainActionBtn.textContent = 'Send Receipt';
+        mainActionBtn.addEventListener('click', () =>
+          sendEmail(client, 'receipt', mainActionBtn)
+        );
+      } else {
+        mainActionBtn.textContent = 'Send Reminder';
+        mainActionBtn.addEventListener('click', () =>
+          sendEmail(client, 'reminder', mainActionBtn)
+        );
+      }
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.classList.add('delete-btn');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.addEventListener('click', () => deleteClient(client));
+
+      actionsTd.appendChild(mainActionBtn);
+      actionsTd.appendChild(deleteBtn);
+
+      row.appendChild(nameTd);
+      row.appendChild(emailTd);
+      row.appendChild(macTd);
+      row.appendChild(amountTd);
+      row.appendChild(dueTd);
+      row.appendChild(wifiTd);
+      row.appendChild(statusTd);
+      row.appendChild(paidTd);
+      row.appendChild(actionsTd);
+
+      tableBody.appendChild(row);
+    }
+
+    function addDisconnectRow(client) {
+      const row = document.createElement('tr');
+
+      const nameTd = document.createElement('td');
+      nameTd.textContent = client.name;
+
+      const emailTd = document.createElement('td');
+      emailTd.textContent = client.email;
+
+      const amountTd = document.createElement('td');
+      amountTd.textContent = client.amount;
+
+      const dueTd = document.createElement('td');
+      dueTd.textContent = client.dueDate;
+
+      const wifiTd = document.createElement('td');
+      wifiTd.textContent = client.wifi;
+
+      const macTd = document.createElement('td');
+      macTd.textContent = client.phone || '';
+
+      const actionsTd = document.createElement('td');
+
+      const resendBtn = document.createElement('button');
+      resendBtn.classList.add('action-btn');
+      resendBtn.textContent = 'Resend Email';
+      resendBtn.addEventListener('click', () =>
+        sendEmail(client, 'reminder', resendBtn)
+      );
+
+      const discBtn = document.createElement('button');
+      discBtn.classList.add('action-btn');
+      discBtn.textContent = 'Disconnection Notice';
+      discBtn.addEventListener('click', async () => {
+        await sendEmail(client, 'disconnection', discBtn);
+        const ok = await updateStatus(client, 'disconnected');
+        if (ok) renderClients();
+      });
+
+      actionsTd.appendChild(resendBtn);
+      actionsTd.appendChild(discBtn);
+
+      row.appendChild(nameTd);
+      row.appendChild(emailTd);
+      row.appendChild(amountTd);
+      row.appendChild(dueTd);
+      row.appendChild(wifiTd);
+      row.appendChild(macTd);
+      row.appendChild(actionsTd);
+
+      disconnectBody.appendChild(row);
+    }
+
+    function renderClients() {
+      tableBody.innerHTML = '';
+      disconnectBody.innerHTML = '';
+
+      clients.forEach(client => {
+        addClientRow(client);
+        if (isOverdue(client) && client.status !== 'disconnected') {
+          addDisconnectRow(client);
+        }
+      });
+    }
+
+    async function loadClients() {
+      try {
+        const response = await fetch('/api/clients');
+        const data = await response.json();
+        if (data.clients && Array.isArray(data.clients)) {
+          clients = data.clients;
+          renderClients();
+        }
+      } catch (err) {
+        console.error('Error loading clients:', err);
+      }
+    }
+
+    // Apply global due date to all clients
+    applyGlobalDueDateBtn.addEventListener('click', async () => {
+      const dueDate = document.getElementById('globalDueDate').value;
+      if (!dueDate) {
+        alert('Please select a date.');
+        return;
+      }
+      if (!confirm(`Apply due date ${dueDate} to ALL clients?`)) return;
+
+      try {
+        const response = await fetch('/api/clients/update-due-dates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dueDate })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error(result);
+          alert('Failed to update due dates: ' + (result.error || 'Unknown error'));
+          return;
+        }
+
+        alert(`Updated due date for ${result.updatedCount ?? 'all'} clients.`);
+        await loadClients();
+      } catch (err) {
+        console.error(err);
+        alert('Error updating due dates. Please check your server.');
+      }
+    });
+
+    // Add client
+    addClientBtn.addEventListener('click', async function () {
+      const name = document.getElementById('clientName').value.trim();
+      const email = document.getElementById('clientEmail').value.trim();
+      const phone = document.getElementById('clientPhone').value.trim();
+      const amount = document.getElementById('clientAmount').value.trim();
+      const dueDate = document.getElementById('clientDueDate').value;
+      const wifi = document.getElementById('clientWifi').value;
+
+      if (!name || !email || !amount || !dueDate || !wifi) {
+        alert('Please fill in Name, Email, Amount, Due Date, and WiFi.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, amount, dueDate, wifi })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.client) {
+          clients.unshift(result.client);
+          renderClients();
+        } else {
+          console.error(result);
+          alert('Failed to save client: ' + (result.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error saving client:', err);
+        alert('Error saving client. Please check your server.');
+      }
+
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientEmail').value = '';
+      document.getElementById('clientPhone').value = '';
+      document.getElementById('clientAmount').value = '';
+      document.getElementById('clientDueDate').value = '';
+      document.getElementById('clientWifi').value = '';
+    });
+
+    window.addEventListener('load', loadClients);
+  </script>
+</body>
+</html>
