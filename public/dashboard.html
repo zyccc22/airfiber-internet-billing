@@ -186,7 +186,7 @@
       overflow-y: auto;
     }
 
-    /* -------- STATS CARDS (used only inside Payments tab now) -------- */
+    /* -------- STATS CARDS (Payments tab) -------- */
     .cards-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -363,6 +363,18 @@
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
+    }
+
+    /* NEW: layout for name + actions cell */
+    .client-main-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .client-name-row {
+      font-size: 12px;
+      font-weight: 500;
     }
 
     .hide-mobile { }
@@ -549,14 +561,14 @@
           <table id="clientsTable">
             <thead>
             <tr>
-              <th>Name</th>
+              <th>Name & Actions</th>
               <th class="hide-mobile">Email</th>
               <th>MAC</th>
               <th>WiFi</th>
               <th class="hide-mobile">Due</th>
               <th>Amount</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th class="hide-mobile">Edit/Delete</th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -619,7 +631,6 @@
           </div>
         </div>
 
-        <!-- moved HERE: stats only visible in Payments -->
         <div class="cards-row">
           <div class="stat-card">
             <div class="stat-label">Total Amount to Collect</div>
@@ -826,8 +837,25 @@
       return a.name.localeCompare(b.name);
     });
 
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
     sorted.forEach(client => {
       const tr = document.createElement('tr');
+
+      const amtNum = parseAmountStr(client.amount);
+      const isPaid = client.status === 'paid';
+
+      let dueDateObj = null;
+      if (client.dueDate) {
+        const d = new Date(client.dueDate);
+        if (!isNaN(d.getTime())) {
+          d.setHours(0,0,0,0);
+          dueDateObj = d;
+        }
+      }
+      const isOverdue = !isPaid && dueDateObj && dueDateObj < today;
+
       const statusHtml =
         client.status === 'paid'
           ? '<span class="status-pill status-paid">Paid</span>'
@@ -837,22 +865,41 @@
 
       const mac = client.phone || '';
 
+      // build actions shown under the Name cell
+      let primaryActions = `
+        <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${client.id}">
+          ${isPaid ? 'Mark Pending' : 'Mark Paid'}
+        </button>
+        <button class="btn btn-small btn-soft" data-action="reminder" data-id="${client.id}">Reminder</button>
+      `;
+      if (isPaid) {
+        primaryActions += `
+          <button class="btn btn-small btn-soft" data-action="receipt" data-id="${client.id}">Receipt</button>
+        `;
+      }
+      if (isOverdue) {
+        primaryActions += `
+          <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${client.id}">Disconnect</button>
+        `;
+      }
+
       tr.innerHTML = `
-        <td>${client.name}</td>
+        <td>
+          <div class="client-main-cell">
+            <div class="client-name-row">${client.name}</div>
+            <div class="actions">
+              ${primaryActions}
+            </div>
+          </div>
+        </td>
         <td class="hide-mobile">${client.email}</td>
         <td>${mac || '<span style="color:#4b5563;">–</span>'}</td>
         <td><span class="tag tag-wifi">${client.wifi}</span></td>
         <td class="hide-mobile">${client.dueDate}</td>
-        <td>${formatPeso(parseAmountStr(client.amount))}</td>
+        <td>${formatPeso(amtNum)}</td>
         <td>${statusHtml}</td>
-        <td>
+        <td class="hide-mobile">
           <div class="actions">
-            <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${client.id}">
-              ${client.status === 'paid' ? 'Mark Pending' : 'Mark Paid'}
-            </button>
-            <button class="btn btn-small btn-soft" data-action="reminder" data-id="${client.id}">Reminder</button>
-            <button class="btn btn-small btn-soft" data-action="receipt" data-id="${client.id}">Receipt</button>
-            <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${client.id}">Disconnect</button>
             <button class="btn btn-small btn-soft" data-action="edit" data-id="${client.id}">Edit</button>
             <button class="btn btn-small btn-ghost" data-action="delete" data-id="${client.id}">Delete</button>
           </div>
@@ -1094,7 +1141,7 @@
     }
   }
 
-  // ------- LOGIN SETTINGS (CHANGE LOGIN EMAIL + PASSWORD) -------
+  // ------- LOGIN SETTINGS -------
   function loadLoginSettingsForm() {
     const emailInput = document.getElementById('loginEmail');
     const passInput = document.getElementById('loginPassword');
@@ -1149,10 +1196,7 @@
     });
   }
 
-  // Initialize login settings form on load
   loadLoginSettingsForm();
-
-  // INITIAL LOAD OF CLIENTS
   loadClients();
 </script>
 </body>
