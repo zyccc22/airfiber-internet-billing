@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>AirFiber Internet Billing - Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Billing Reminder - Dashboard</title>
   <style>
     :root {
-      --bg: #f5f5f5;
-      --card-bg: #ffffff;
-      --border: #e5e7eb;
-      --accent: #ff9900;
-      --accent-dark: #f97316;
-      --danger: #b80000;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --sidebar-bg: #111827;
-      --sidebar-text: #e5e7eb;
-      --sidebar-active: #1f2937;
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --sidebar-bg: #020617;
+      --border-subtle: #1f2937;
+      --accent: #f97316;
+      --accent-soft: rgba(249,115,22,0.15);
+      --accent-strong: #ea580c;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --danger: #dc2626;
+      --success: #22c55e;
     }
 
     * {
@@ -25,1350 +25,1109 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
+      height: 100vh;
+      display: flex;
     }
 
-    /* Layout with left sidebar */
-    .layout {
+    .app-shell {
       display: flex;
-      min-height: 100vh;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .sidebar {
-      width: 220px;
-      background-color: var(--sidebar-bg);
-      color: var(--sidebar-text);
-      padding: 12px 8px;
+      width: 240px;
+      background: radial-gradient(circle at top, #111827 0, #020617 40%, #020617 100%);
+      border-right: 1px solid var(--border-subtle);
+      padding: 16px 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 16px;
     }
 
-    .sidebar-header {
-      padding: 8px 8px 4px 8px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
     }
 
-    .sidebar-title {
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 0%, #f97316, #b91c1c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
       font-size: 16px;
-      font-weight: bold;
+      box-shadow: 0 0 15px rgba(248,113,22,0.7);
     }
 
-    .sidebar-subtitle {
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .brand-sub {
       font-size: 11px;
-      color: #9ca3af;
-      margin-top: 2px;
+      color: var(--text-muted);
     }
 
-    .sidebar-nav {
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin: 8px 0 4px;
+    }
+
+    .nav-list {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      margin-top: 8px;
     }
 
-    .nav-item {
+    .nav-btn {
+      width: 100%;
       text-align: left;
       border: none;
       background: transparent;
-      color: var(--sidebar-text);
+      color: var(--text-muted);
       padding: 8px 10px;
-      border-radius: 6px;
+      border-radius: 999px;
       font-size: 13px;
       cursor: pointer;
-      transition: background-color 0.15s ease, transform 0.08s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.06s ease;
     }
 
-    .nav-item:hover {
-      background-color: #1f2937;
-      transform: translateX(2px);
+    .nav-btn span {
+      flex: 1;
     }
 
-    .nav-item.active {
-      background-color: var(--sidebar-active);
-      font-weight: bold;
+    .nav-btn:hover {
+      background-color: rgba(31,41,55,0.7);
+      color: var(--text-main);
+      transform: translateY(-1px);
     }
 
-    .main-area {
+    .nav-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background-color: rgba(15,23,42,0.7);
+      color: var(--text-muted);
+    }
+
+    .nav-btn.logout {
+      margin-top: auto;
+      background: rgba(127,29,29,0.2);
+      border: 1px solid rgba(248,113,22,0.35);
+      color: #fecaca;
+    }
+
+    .nav-btn.logout:hover {
+      background: rgba(127,29,29,0.35);
+      color: #fee2e2;
+    }
+
+    .main {
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-width: 0;
+      background: radial-gradient(circle at top left, rgba(30,64,175,0.35), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(248,113,22,0.2), transparent 55%),
+                  #020617;
     }
 
-    header {
-      background-color: #232f3e;
-      color: white;
-      padding: 10px 12px;
+    .topbar {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-subtle);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to right, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
     }
 
-    header h1 {
-      font-size: 18px;
-      margin: 0;
+    .topbar-title {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .topbar-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pill-status {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background-color: rgba(22,163,74,0.15);
+      color: #bbf7d0;
+      border: 1px solid rgba(22,163,74,0.5);
+    }
+
+    .main-content {
       flex: 1;
+      padding: 14px 18px 16px;
+      overflow-y: auto;
     }
 
-    .user-info {
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .sidebar-toggle {
-      border: none;
-      background: transparent;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-      display: none; /* show on mobile only */
-      margin-right: 6px;
-    }
-
-    main {
-      padding: 12px;
-      max-width: 1100px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: var(--card-bg);
-      padding: 12px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 10px;
       margin-bottom: 12px;
     }
 
-    .card h2 {
-      margin-top: 0;
-      font-size: 16px;
+    .stat-card {
+      background-color: rgba(15,23,42,0.88);
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .card {
+      background-color: rgba(15,23,42,0.9);
+      border-radius: 12px;
+      padding: 12px 12px 14px;
+      border: 1px solid rgba(148,163,184,0.23);
+      box-shadow: 0 16px 30px rgba(0,0,0,0.4);
+      margin-bottom: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 8px;
     }
 
-    .client-form {
-      display: flex;
-      flex-wrap: wrap;
+    .card-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background-color: rgba(15,23,42,0.7);
+      color: var(--text-muted);
+      border: 1px solid rgba(55,65,81,0.9);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
       gap: 8px;
+      margin-top: 6px;
     }
 
-    .client-form input,
-    .client-form select {
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      flex: 1 1 150px;
-      min-width: 130px;
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .client-form button {
-      padding: 8px 14px;
-      font-size: 14px;
+    .form-field label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .form-field input,
+    .form-field select {
+      border-radius: 9px;
+      border: 1px solid var(--border-subtle);
+      padding: 6px 8px;
+      font-size: 12px;
+      background-color: rgba(15,23,42,0.85);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(249,115,22,0.5);
+      background-color: rgba(15,23,42,0.96);
+    }
+
+    .btn {
       border-radius: 999px;
       border: none;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.08s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out, background 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
       background-image: linear-gradient(135deg, #facc15, #f97316);
       color: #111827;
-      font-weight: bold;
-      cursor: pointer;
-      flex: 0 0 auto;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-      transition: box-shadow 0.15s ease, transform 0.08s ease;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
     }
 
-    .client-form button:hover {
+    .btn-primary:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 9px 20px rgba(0,0,0,0.5);
       transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     }
 
-    .client-form button:active {
-      transform: translateY(0) scale(0.97);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    .btn-primary:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    .table-wrapper {
-      width: 100%;
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid rgba(55,65,81,0.8);
+    }
+
+    .btn-ghost:hover {
+      background-color: rgba(15,23,42,0.9);
+      color: var(--text-main);
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    .btn-danger {
+      background-color: rgba(185,28,28,0.9);
+      color: #fee2e2;
+    }
+
+    .btn-danger:hover {
+      background-color: rgba(220,38,38,0.95);
+    }
+
+    .btn-success {
+      background-color: rgba(22,163,74,0.95);
+      color: #ecfdf5;
+    }
+
+    .btn-success:hover {
+      background-color: rgba(22,163,74,1);
+    }
+
+    .btn-soft {
+      background-color: rgba(15,23,42,0.85);
+      border: 1px solid rgba(148,163,184,0.35);
+      color: var(--text-main);
+    }
+
+    .btn-soft:hover {
+      background-color: rgba(30,64,175,0.6);
+    }
+
+    .table-wrap {
       overflow-x: auto;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 520px;
+      font-size: 11px;
     }
 
     th, td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      font-size: 13px;
+      padding: 6px 6px;
+      border-bottom: 1px solid rgba(31,41,55,0.9);
       text-align: left;
-      vertical-align: top;
+      white-space: nowrap;
     }
 
     th {
-      background-color: #f0f0f0;
-    }
-
-    small {
-      font-size: 12px;
+      font-weight: 500;
       color: var(--text-muted);
-    }
-
-    .summary-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .summary-item {
-      flex: 1 1 160px;
-      min-width: 150px;
-      background-color: #f9fafb;
-      border-radius: 8px;
-      padding: 8px 10px;
-      border: 1px solid var(--border);
-    }
-
-    .summary-label {
       font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 2px;
     }
 
-    .summary-value {
-      font-size: 16px;
-      font-weight: bold;
-      color: var(--text-main);
+    tr:hover td {
+      background-color: rgba(15,23,42,0.85);
     }
 
-    /* BUTTONS – nicer + animated */
-    .send-btn,
-    .delete-btn,
-    .action-btn,
-    .edit-btn,
-    .inline-send-btn {
-      padding: 4px 10px;
-      font-size: 11px;
-      border: none;
+    .tag {
       border-radius: 999px;
-      background-image: linear-gradient(135deg, #0ea5e9, #0369a1);
-      color: #ffffff;
-      cursor: pointer;
-      margin-right: 4px;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-      transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+      padding: 2px 6px;
+      font-size: 10px;
+      border: 1px solid rgba(55,65,81,0.9);
+      color: var(--text-muted);
     }
 
-    .send-btn:hover,
-    .delete-btn:hover,
-    .action-btn:hover,
-    .edit-btn:hover,
-    .inline-send-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    }
-
-    .send-btn:active,
-    .delete-btn:active,
-    .action-btn:active,
-    .edit-btn:active,
-    .inline-send-btn:active {
-      transform: translateY(0) scale(0.97);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    }
-
-    .delete-btn {
-      background-image: linear-gradient(135deg, #dc2626, #991b1b);
-    }
-
-    .edit-btn {
-      background-image: linear-gradient(135deg, #6b7280, #374151);
-    }
-
-    .inline-send-btn.reminder-btn {
-      background-image: linear-gradient(135deg, #f97316, #ea580c);
-    }
-
-    .inline-send-btn.receipt-btn {
-      background-image: linear-gradient(135deg, #22c55e, #16a34a);
-    }
-
-    .send-btn:disabled,
-    .action-btn:disabled,
-    .inline-send-btn:disabled {
-      background-image: none;
-      background-color: #9ca3af;
-      box-shadow: none;
-      cursor: default;
+    .tag-wifi {
+      border-color: rgba(59,130,246,0.7);
+      color: #bfdbfe;
     }
 
     .status-pill {
-      padding: 2px 6px;
-      border-radius: 12px;
-      font-size: 11px;
-      color: white;
-      display: inline-block;
-    }
-
-    .status-pending {
-      background-color: var(--accent);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 500;
     }
 
     .status-paid {
-      background-color: #22c55e;
+      background-color: rgba(22,163,74,0.2);
+      color: #bbf7d0;
+      border: 1px solid rgba(22,163,74,0.7);
     }
 
-    .status-disconnected {
-      background-color: var(--danger);
+    .status-pending {
+      background-color: rgba(245,158,11,0.18);
+      color: #fed7aa;
+      border: 1px solid rgba(245,158,11,0.7);
     }
 
-    .client-name-main {
-      font-weight: 600;
-      margin-bottom: 4px;
+    .status-disconnect {
+      background-color: rgba(185,28,28,0.22);
+      color: #fecaca;
+      border: 1px solid rgba(185,28,28,0.7);
     }
 
-    .inline-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .inline-paid-label {
-      font-size: 11px;
-      color: #374151;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .paid-checkbox {
-      transform: scale(1.1);
-    }
-
-    /* Edit modal */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-
-    .modal-backdrop.show {
-      display: flex;
-    }
-
-    .modal {
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 16px;
-      width: 95%;
-      max-width: 420px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
-    .modal h3 {
-      margin: 0 0 8px 0;
-      font-size: 16px;
-    }
-
-    .modal .modal-row {
+    .stack-vertical {
       display: flex;
       flex-direction: column;
-      margin-bottom: 8px;
+      gap: 4px;
     }
 
-    .modal label {
-      font-size: 12px;
-      margin-bottom: 2px;
-      color: var(--text-muted);
-    }
-
-    .modal input,
-    .modal select {
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
-      gap: 8px;
-    }
-
-    .btn-cancel {
-      background: #e5e7eb;
-      color: #111827;
-      border-radius: 4px;
-      padding: 6px 10px;
-      font-size: 13px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-save {
-      background: var(--accent-dark);
-      color: #ffffff;
-      border-radius: 4px;
-      padding: 6px 12px;
-      font-size: 13px;
-      border: none;
-      cursor: pointer;
-    }
-
-    section {
+    .mobile-only {
       display: none;
     }
 
-    section.active-section {
-      display: block;
-    }
-
-    /* Mobile */
-    @media (max-width: 768px) {
-      .layout {
-        flex-direction: column;
-      }
-
+    @media (max-width: 900px) {
       .sidebar {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: -240px;
-        z-index: 40;
-        transition: left 0.2s ease-out;
+        width: 72px;
+        padding: 10px 8px;
       }
-
-      .sidebar.open {
-        left: 0;
+      .brand-title,
+      .brand-sub {
+        display: none;
       }
-
-      .main-area {
-        margin-left: 0;
-      }
-
-      .sidebar-toggle {
-        display: inline-block;
-      }
-
-      header {
-        padding: 10px 10px;
-      }
-
-      header h1 {
-        font-size: 16px;
-      }
-
-      .user-info {
+      .nav-btn span {
         font-size: 11px;
       }
-
-      main {
-        padding: 8px;
+      .nav-badge {
+        display: none;
       }
-
-      .card {
-        padding: 10px;
+      .cards-row {
+        grid-template-columns: 1fr;
       }
+    }
 
-      .client-form {
+    @media (max-width: 720px) {
+      body {
         flex-direction: column;
+        height: auto;
       }
-
-      .client-form input,
-      .client-form select,
-      .client-form button {
+      .app-shell {
+        flex-direction: column;
+        height: auto;
+      }
+      .sidebar {
+        flex-direction: row;
         width: 100%;
-        flex: 1 1 auto;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
       }
-
-      table {
-        min-width: 480px;
+      .nav-btn.logout {
+        margin-top: 0;
+      }
+      .main {
+        height: calc(100vh - 70px);
+      }
+      .table-wrap {
+        font-size: 11px;
+      }
+      .hide-mobile {
+        display: none;
+      }
+      .mobile-only {
+        display: inline-block;
       }
     }
   </style>
 </head>
 <body>
-  <div class="layout">
-    <!-- LEFT SIDEBAR TABS -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">AirFiber Billing</div>
-        <div class="sidebar-subtitle">Management Portal</div>
-      </div>
-      <nav class="sidebar-nav">
-        <button class="nav-item active" data-section="all">ALL CLIENTS</button>
-        <button class="nav-item" data-section="devices">DEVICES</button>
-        <button class="nav-item" data-section="emails">EMAIL ADDRESSES</button>
-        <button class="nav-item" data-section="money">MONEY COLLECTION</button>
-        <button class="nav-item" data-section="portal">PORTAL</button>
-      </nav>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-area">
-      <header>
-        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
-        <h1>Billing Reminder Dashboard</h1>
-        <div class="user-info">
-          Logged in as: <strong>Admin</strong>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-logo">A</div>
+        <div>
+          <div class="brand-title">AirFiber Billing</div>
+          <div class="brand-sub">Admin dashboard</div>
         </div>
-      </header>
-
-      <main>
-        <!-- MONEY COLLECTION TAB -->
-        <section id="section-money">
-          <div class="card">
-            <h2>Billing Summary</h2>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <div class="summary-label">Total to Collect</div>
-                <div class="summary-value" id="totalAmount">₱0.00</div>
-              </div>
-              <div class="summary-item">
-                <div class="summary-label">Collected Amount</div>
-                <div class="summary-value" id="collectedAmount">₱0.00</div>
-              </div>
-              <div class="summary-item">
-                <div class="summary-label">Remaining to Collect</div>
-                <div class="summary-value" id="remainingAmount">₱0.00</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>Set Billing Date for All Clients</h2>
-            <div class="client-form">
-              <input type="date" id="globalDueDate" />
-              <button id="applyGlobalDueDateBtn">Apply to All Clients</button>
-            </div>
-            <small>Pick the billing date (e.g. 2025-02-26). This will update the due date of every client, without changing their devices or other details.</small>
-          </div>
-
-          <div class="card">
-            <h2>WiFi Group Summary</h2>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>WiFi Group</th>
-                    <th>Clients</th>
-                    <th>Total Amount</th>
-                    <th>Collected</th>
-                    <th>Remaining</th>
-                  </tr>
-                </thead>
-                <tbody id="wifiSummaryBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- ALL CLIENTS TAB -->
-        <section id="section-all" class="active-section">
-          <div class="card">
-            <h2>Add Client</h2>
-            <div class="client-form">
-              <input type="text" id="clientName" placeholder="Client Name" />
-              <input type="email" id="clientEmail" placeholder="Email Address" />
-              <input type="text" id="clientPhone" placeholder="Device MAC (optional)" />
-              <input type="text" id="clientAmount" placeholder="Amount Due" />
-              <input type="date" id="clientDueDate" />
-
-              <select id="clientWifi">
-                <option value="">Select WiFi</option>
-                <option value="WiFi 1">WiFi 1</option>
-                <option value="WiFi 2">WiFi 2</option>
-                <option value="WiFi 3">WiFi 3</option>
-                <option value="WiFi 4">WiFi 4</option>
-                <option value="Extension">Extension</option>
-              </select>
-
-              <button id="addClientBtn">Add Client</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>All Clients</h2>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Client</th>
-                    <th>Device MAC</th>
-                    <th>Status</th>
-                    <th>Amount</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="clientTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>FOR DISCONNECTION (Overdue & Not Paid)</h2>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Client Name</th>
-                    <th>Email</th>
-                    <th>Amount</th>
-                    <th>Due Date</th>
-                    <th>WiFi</th>
-                    <th>Device MAC</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="disconnectTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- DEVICES TAB -->
-        <section id="section-devices">
-          <div class="card">
-            <h2>Devices (by MAC Address)</h2>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Client Name</th>
-                    <th>Device MAC</th>
-                    <th>WiFi</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="devicesTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- EMAIL ADDRESSES TAB -->
-        <section id="section-emails">
-          <div class="card">
-            <h2>Email Addresses</h2>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Client Name</th>
-                    <th>Email</th>
-                    <th>WiFi</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="emailsTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- PORTAL TAB (placeholder for routers) -->
-        <section id="section-portal">
-          <div class="card">
-            <h2>Router Portal (Coming Soon)</h2>
-            <p>
-              This section will be used to access your AirFiber routers (Main + 4 others).
-              Once each router has a fixed LAN IP, we can add quick shortcut buttons here to
-              open their admin pages.
-            </p>
-            <ol>
-              <li>Give each router a <strong>fixed local IP</strong> (e.g. 192.168.1.1, 192.168.1.2, ...).</li>
-              <li>Write those IPs down so you don’t forget them.</li>
-              <li>Later we’ll add buttons here like “Open Main Router”, “Open WiFi 2 Router”, etc.</li>
-            </ol>
-            <p>
-              Below I’ll explain the exact steps for setting those fixed IPs on your routers.
-            </p>
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
-
-  <!-- Edit modal -->
-  <div class="modal-backdrop" id="editBackdrop">
-    <div class="modal">
-      <h3>Edit Client</h3>
-      <div class="modal-row">
-        <label for="editName">Client Name</label>
-        <input type="text" id="editName" />
       </div>
-      <div class="modal-row">
-        <label for="editEmail">Email Address</label>
-        <input type="email" id="editEmail" />
-      </div>
-      <div class="modal-row">
-        <label for="editPhone">Device MAC (optional)</label>
-        <input type="text" id="editPhone" />
-      </div>
-      <div class="modal-row">
-        <label for="editAmount">Amount Due</label>
-        <input type="text" id="editAmount" />
-      </div>
-      <div class="modal-row">
-        <label for="editDueDate">Due Date</label>
-        <input type="date" id="editDueDate" />
-      </div>
-      <div class="modal-row">
-        <label for="editWifi">WiFi Group</label>
-        <select id="editWifi">
-          <option value="WiFi 1">WiFi 1</option>
-          <option value="WiFi 2">WiFi 2</option>
-          <option value="WiFi 3">WiFi 3</option>
-          <option value="WiFi 4">WiFi 4</option>
-          <option value="Extension">Extension</option>
-        </select>
-      </div>
-      <div class="modal-actions">
-        <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
-        <button class="btn-save" id="saveEditBtn">Save changes</button>
+      <div class="sidebar-section-title">Navigation</div>
+      <div class="nav-list">
+        <button class="nav-btn active" data-tab="all-clients"><span>All Clients</span></button>
+        <button class="nav-btn" data-tab="devices"><span>Devices</span></button>
+        <button class="nav-btn" data-tab="emails"><span>Email Addresses</span></button>
+        <button class="nav-btn" data-tab="money"><span>Money Collection</span></button>
+        <button class="nav-btn" data-tab="portal"><span>Portal</span></button>
       </div>
     </div>
-  </div>
 
-  <script>
-    // ====== Sidebar nav & sections ======
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const navButtons = document.querySelectorAll('.nav-item');
-    const sections = {
-      all: document.getElementById('section-all'),
-      devices: document.getElementById('section-devices'),
-      emails: document.getElementById('section-emails'),
-      money: document.getElementById('section-money'),
-      portal: document.getElementById('section-portal'),
-    };
+    <button class="nav-btn logout" id="logoutBtn">
+      <span>Logout</span>
+    </button>
+  </aside>
 
-    function setActiveSection(sectionKey) {
-      Object.keys(sections).forEach(key => {
-        if (key === sectionKey) {
-          sections[key].classList.add('active-section');
-        } else {
-          sections[key].classList.remove('active-section');
-        }
-      });
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title">Billing Dashboard</div>
+        <div class="topbar-sub">Manage AirFiber Internet billing, reminders, and collections</div>
+      </div>
+      <div class="topbar-right">
+        <div class="pill-status">Online • Render</div>
+      </div>
+    </header>
 
-      navButtons.forEach(btn => {
-        if (btn.dataset.section === sectionKey) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
+    <section class="main-content">
+      <!-- Stat cards -->
+      <div class="cards-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Amount to Collect</div>
+          <div class="stat-value" id="statTotal">₱0</div>
+          <div class="stat-sub">Sum of all client amounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Collected Amount</div>
+          <div class="stat-value" id="statCollected">₱0</div>
+          <div class="stat-sub">Clients marked as Paid</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Remaining to Collect</div>
+          <div class="stat-value" id="statRemaining">₱0</div>
+          <div class="stat-sub">Pending or For Disconnection</div>
+        </div>
+      </div>
 
-      sidebar.classList.remove('open');
+      <!-- ALL CLIENTS TAB -->
+      <div class="card tab-panel" id="tab-all-clients">
+        <div class="card-header">
+          <div>
+            <div class="card-title">All Clients</div>
+            <div class="card-sub">Add, edit, and manage all registered clients</div>
+          </div>
+          <div>
+            <button class="btn btn-soft btn-small" id="refreshBtn">Refresh</button>
+          </div>
+        </div>
+
+        <!-- Add client form -->
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="clientName">Name</label>
+            <input type="text" id="clientName" placeholder="Client name" />
+          </div>
+          <div class="form-field">
+            <label for="clientEmail">Email</label>
+            <input type="email" id="clientEmail" placeholder="client@example.com" />
+          </div>
+          <div class="form-field">
+            <label for="clientMac">Device MAC (optional)</label>
+            <input type="text" id="clientMac" placeholder="AA:BB:CC:DD:EE:FF" />
+          </div>
+          <div class="form-field">
+            <label for="clientAmount">Amount (₱)</label>
+            <input type="number" id="clientAmount" placeholder="1000" />
+          </div>
+          <div class="form-field">
+            <label for="clientDueDate">Due Date</label>
+            <input type="date" id="clientDueDate" />
+          </div>
+          <div class="form-field">
+            <label for="clientWifi">WiFi Group</label>
+            <select id="clientWifi">
+              <option value="WiFi 1">WiFi 1</option>
+              <option value="WiFi 2">WiFi 2</option>
+              <option value="WiFi 3">WiFi 3</option>
+              <option value="WiFi 4">WiFi 4</option>
+              <option value="Extension">Extension</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:8px; display:flex; justify-content:flex-end;">
+          <button class="btn btn-primary" id="addClientBtn">Add Client</button>
+        </div>
+
+        <!-- Clients table -->
+        <div class="table-wrap">
+          <table id="clientsTable">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th class="hide-mobile">Email</th>
+              <th>MAC</th>
+              <th>WiFi</th>
+              <th class="hide-mobile">Due</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DEVICES TAB -->
+      <div class="card tab-panel" id="tab-devices" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Devices Overview</div>
+            <div class="card-sub">Quick view of devices / MAC addresses per WiFi group</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="devicesTable">
+            <thead>
+            <tr>
+              <th>WiFi</th>
+              <th>Client</th>
+              <th>MAC</th>
+              <th>Email</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EMAIL ADDRESSES TAB -->
+      <div class="card tab-panel" id="tab-emails" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Client Email List</div>
+            <div class="card-sub">Useful for manual emailing or exporting</div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="emailsTable">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>WiFi</th>
+              <th>Status</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MONEY COLLECTION TAB -->
+      <div class="card tab-panel" id="tab-money" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Money Collection</div>
+            <div class="card-sub">Track who has paid, who is pending, and who is for disconnection</div>
+          </div>
+        </div>
+
+        <div class="stack-vertical">
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">Global Due Date (applied to all clients)</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <input type="date" id="globalDueDate" style="border-radius:9px;border:1px solid var(--border-subtle);padding:6px 8px;background:rgba(15,23,42,0.85);color:var(--text-main);font-size:12px;outline:none;" />
+              <button class="btn btn-soft btn-small" id="updateAllDueBtn">Update all due dates</button>
+            </div>
+          </div>
+
+          <div class="card-sub" style="margin-top:10px;">Unpaid / Pending</div>
+          <div class="table-wrap">
+            <table id="pendingTable">
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Due</th>
+                <th>WiFi</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="card-sub" style="margin-top:10px;">For Disconnection</div>
+          <div class="table-wrap">
+            <table id="disconnectionTable">
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Due</th>
+                <th>WiFi</th>
+                <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PORTAL TAB -->
+      <div class="card tab-panel" id="tab-portal" style="display:none;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Router Portal (Coming Soon)</div>
+            <div class="card-sub">
+              This section will contain quick links to your 5 router admin pages.
+              Once all router IPs are fixed, we can turn this into shortcuts.
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+          For now, please continue using your router's admin interface directly. When you're ready,
+          we can add buttons here like "Main Router", "2nd Floor", "3rd Floor", etc.
+        </p>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<script>
+  // ========== LOGIN PROTECTION ==========
+  if (localStorage.getItem('af_isLoggedIn') !== 'true') {
+    window.location.href = '/';
+  }
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function () {
+      localStorage.removeItem('af_isLoggedIn');
+      window.location.href = '/';
+    });
+  }
+
+  // ========== TABS ==========
+  const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(panel => panel.style.display = 'none');
+
+      btn.classList.add('active');
+      document.getElementById('tab-' + target).style.display = 'block';
+    });
+  });
+
+  // ========== API HELPERS ==========
+  async function apiGet(path) {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error('Request failed');
+    return res.json();
+  }
+
+  async function apiSend(path, method, body) {
+    const res = await fetch(path, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Request failed');
     }
+    return res.json();
+  }
 
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        setActiveSection(btn.dataset.section);
-      });
+  // ========== STATE ==========
+  let clients = [];
+
+  function parseAmountStr(str) {
+    if (!str) return 0;
+    const clean = String(str).replace(/[^\d.]/g, '');
+    const val = parseFloat(clean);
+    return isNaN(val) ? 0 : val;
+  }
+
+  function formatPeso(num) {
+    return '₱' + Number(num).toLocaleString('en-PH', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+  }
+
+  // ========== RENDER FUNCTIONS ==========
+  function renderStats() {
+    let total = 0;
+    let collected = 0;
+    clients.forEach(c => {
+      const amt = parseAmountStr(c.amount);
+      total += amt;
+      if (c.status === 'paid') collected += amt;
+    });
+    const remaining = total - collected;
+
+    document.getElementById('statTotal').textContent = formatPeso(total);
+    document.getElementById('statCollected').textContent = formatPeso(collected);
+    document.getElementById('statRemaining').textContent = formatPeso(remaining);
+  }
+
+  function renderClientsTable() {
+    const tbody = document.querySelector('#clientsTable tbody');
+    tbody.innerHTML = '';
+
+    // sort by wifi then name
+    const sorted = [...clients].sort((a,b) => {
+      if (a.wifi < b.wifi) return -1;
+      if (a.wifi > b.wifi) return 1;
+      return a.name.localeCompare(b.name);
     });
 
-    sidebarToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-    });
+    sorted.forEach(client => {
+      const tr = document.createElement('tr');
 
-    // ====== Dashboard logic ======
-    const addClientBtn = document.getElementById('addClientBtn');
-    const applyGlobalDueDateBtn = document.getElementById('applyGlobalDueDateBtn');
-    const tableBody = document.getElementById('clientTableBody');
-    const disconnectBody = document.getElementById('disconnectTableBody');
-    const devicesBody = document.getElementById('devicesTableBody');
-    const emailsBody = document.getElementById('emailsTableBody');
-
-    const editBackdrop = document.getElementById('editBackdrop');
-    const editNameInput = document.getElementById('editName');
-    const editEmailInput = document.getElementById('editEmail');
-    const editPhoneInput = document.getElementById('editPhone');
-    const editAmountInput = document.getElementById('editAmount');
-    const editDueDateInput = document.getElementById('editDueDate');
-    const editWifiSelect = document.getElementById('editWifi');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const saveEditBtn = document.getElementById('saveEditBtn');
-
-    let clients = [];
-    let editingClient = null;
-
-    function isOverdue(client) {
-      if (!client.dueDate) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const due = new Date(client.dueDate);
-      due.setHours(0, 0, 0, 0);
-      return due < today && client.status !== 'paid';
-    }
-
-    function parseAmount(value) {
-      if (value === null || value === undefined) return 0;
-      const cleaned = String(value).replace(/[₱,]/g, '').trim();
-      const num = parseFloat(cleaned);
-      return isNaN(num) ? 0 : num;
-    }
-
-    function formatAmount(num) {
-      return '₱' + num.toLocaleString('en-PH', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    function buildEmailMessage(client, type) {
-      if (type === 'reminder') {
-        return `
-This is a friendly reminder that your bill of ₱${client.amount} for ${client.wifi} is due on ${client.dueDate}.
-
-If you have already paid, please ignore this message.
-
-Thank you!
-        `.trim();
-      } else if (type === 'receipt') {
-        return `
-We have received your payment of ₱${client.amount} for ${client.wifi} (due date ${client.dueDate}).
-
-Thank you for your payment!
-
-Best regards,
-AirFiber Internet Billing
-        `.trim();
-      } else {
-        return `
-Our records show that your bill of ₱${client.amount} for ${client.wifi}, due on ${client.dueDate}, is now overdue.
-
-Your connection is scheduled FOR DISCONNECTION if payment is not received as soon as possible.
-
-If you have already paid, please contact us with your payment details.
-
-Thank you.
-        `.trim();
-      }
-    }
-
-    async function sendEmail(client, type, button) {
-      const subject =
-        type === 'reminder'
-          ? 'Billing Reminder'
-          : type === 'receipt'
-          ? 'Payment Receipt'
-          : 'Disconnection Notice';
-
-      const message = buildEmailMessage(client, type);
-
-      button.disabled = true;
-      const originalText = button.textContent;
-      button.textContent = 'Sending...';
-
-      try {
-        const response = await fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: client.email,
-            subject,
-            message,
-            type,
-            client
-          })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          alert(`${subject} sent to ${client.name} at ${client.email}`);
-        } else {
-          console.error(result);
-          alert('Failed to send email: ' + (result.error || 'Unknown error'));
-          button.disabled = false;
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Error sending email. Please check your internet connection or server.');
-        button.disabled = false;
-      } finally {
-        button.textContent = originalText;
-      }
-    }
-
-    async function updateStatus(client, newStatus) {
-      try {
-        const response = await fetch(`/api/clients/${client.id}/status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus }),
-        });
-
-        const result = await response.json();
-        if (!response.ok) {
-          console.error(result);
-          alert('Failed to update status: ' + (result.error || 'Unknown error'));
-          return false;
-        }
-        client.status = newStatus;
-        return true;
-      } catch (err) {
-        console.error(err);
-        alert('Error updating status. Please check your server.');
-        return false;
-      }
-    }
-
-    async function deleteClient(client) {
-      if (!confirm(`Delete client ${client.name}?`)) return;
-      try {
-        const response = await fetch(`/api/clients/${client.id}`, {
-          method: 'DELETE',
-        });
-        const result = await response.json();
-        if (!response.ok) {
-          console.error(result);
-          alert('Failed to delete client: ' + (result.error || 'Unknown error'));
-          return;
-        }
-        clients = clients.filter(c => c.id !== client.id);
-        renderClients();
-      } catch (err) {
-        console.error(err);
-        alert('Error deleting client. Please check your server.');
-      }
-    }
-
-    function createStatusPill(status) {
-      const span = document.createElement('span');
-      span.classList.add('status-pill');
-      if (status === 'paid') {
-        span.classList.add('status-paid');
-        span.textContent = 'PAID';
-      } else if (status === 'disconnected') {
-        span.classList.add('status-disconnected');
-        span.textContent = 'DISCONNECTED';
-      } else {
-        span.classList.add('status-pending');
-        span.textContent = 'PENDING';
-      }
-      return span;
-    }
-
-    function openEditModal(client) {
-      editingClient = client;
-      editNameInput.value = client.name;
-      editEmailInput.value = client.email;
-      editPhoneInput.value = client.phone || '';
-      editAmountInput.value = client.amount;
-      editDueDateInput.value = client.dueDate || '';
-      editWifiSelect.value = client.wifi || 'WiFi 1';
-      editBackdrop.classList.add('show');
-    }
-
-    function closeEditModal() {
-      editingClient = null;
-      editBackdrop.classList.remove('show');
-    }
-
-    async function saveEditChanges() {
-      if (!editingClient) return;
-
-      const updated = {
-        id: editingClient.id,
-        name: editNameInput.value.trim(),
-        email: editEmailInput.value.trim(),
-        phone: editPhoneInput.value.trim(),
-        amount: editAmountInput.value.trim(),
-        dueDate: editDueDateInput.value,
-        wifi: editWifiSelect.value
-      };
-
-      if (!updated.name || !updated.email || !updated.amount || !updated.dueDate || !updated.wifi) {
-        alert('Please fill in Name, Email, Amount, Due Date, and WiFi.');
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/clients/${updated.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updated)
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          console.error(result);
-          alert('Failed to update client: ' + (result.error || 'Unknown error'));
-          return;
-        }
-
-        const index = clients.findIndex(c => c.id === updated.id);
-        if (index !== -1) {
-          clients[index] = { ...clients[index], ...updated };
-        }
-
-        closeEditModal();
-        renderClients();
-      } catch (err) {
-        console.error(err);
-        alert('Error updating client. Please check your server.');
-      }
-    }
-
-    function addClientRow(client) {
-      const row = document.createElement('tr');
-
-      // Name + inline paid/reminder
-      const nameTd = document.createElement('td');
-      const nameMain = document.createElement('div');
-      nameMain.classList.add('client-name-main');
-      nameMain.textContent = client.name;
-
-      const inlineActions = document.createElement('div');
-      inlineActions.classList.add('inline-actions');
-
-      const paidLabel = document.createElement('label');
-      paidLabel.classList.add('inline-paid-label');
-      const paidCheckbox = document.createElement('input');
-      paidCheckbox.type = 'checkbox';
-      paidCheckbox.classList.add('paid-checkbox');
-      paidCheckbox.checked = client.status === 'paid';
-      paidLabel.appendChild(paidCheckbox);
-      paidLabel.appendChild(document.createTextNode('Paid'));
-
-      const sendBtn = document.createElement('button');
-      sendBtn.classList.add('inline-send-btn');
-      if (client.status === 'paid') {
-        sendBtn.textContent = 'Send Receipt';
-        sendBtn.classList.add('receipt-btn');
-        sendBtn.addEventListener('click', () => sendEmail(client, 'receipt', sendBtn));
-      } else {
-        sendBtn.textContent = 'Send Reminder';
-        sendBtn.classList.add('reminder-btn');
-        sendBtn.addEventListener('click', () => sendEmail(client, 'reminder', sendBtn));
-      }
-
-      paidCheckbox.addEventListener('change', async () => {
-        const newStatus = paidCheckbox.checked ? 'paid' : 'pending';
-        const ok = await updateStatus(client, newStatus);
-        if (!ok) {
-          paidCheckbox.checked = !paidCheckbox.checked;
-        } else {
-          renderClients();
-        }
-      });
-
-      inlineActions.appendChild(paidLabel);
-      inlineActions.appendChild(sendBtn);
-
-      nameTd.appendChild(nameMain);
-      nameTd.appendChild(inlineActions);
-
-      // MAC
-      const macTd = document.createElement('td');
-      macTd.textContent = client.phone || '';
-
-      // Status
-      const statusTd = document.createElement('td');
-      statusTd.appendChild(createStatusPill(client.status || 'pending'));
-
-      // Amount
-      const amountTd = document.createElement('td');
-      amountTd.textContent = client.amount;
-
-      // Actions (Edit / Delete only)
-      const actionsTd = document.createElement('td');
-
-      const editBtn = document.createElement('button');
-      editBtn.classList.add('edit-btn');
-      editBtn.textContent = 'Edit';
-      editBtn.addEventListener('click', () => openEditModal(client));
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.classList.add('delete-btn');
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.addEventListener('click', () => deleteClient(client));
-
-      actionsTd.appendChild(editBtn);
-      actionsTd.appendChild(deleteBtn);
-
-      row.appendChild(nameTd);
-      row.appendChild(macTd);
-      row.appendChild(statusTd);
-      row.appendChild(amountTd);
-      row.appendChild(actionsTd);
-
-      tableBody.appendChild(row);
-    }
-
-    function addDisconnectRow(client) {
-      const row = document.createElement('tr');
-
-      const nameTd = document.createElement('td');
-      nameTd.textContent = client.name;
-
-      const emailTd = document.createElement('td');
-      emailTd.textContent = client.email;
-
-      const amountTd = document.createElement('td');
-      amountTd.textContent = client.amount;
-
-      const dueTd = document.createElement('td');
-      dueTd.textContent = client.dueDate;
-
-      const wifiTd = document.createElement('td');
-      wifiTd.textContent = client.wifi;
-
-      const macTd = document.createElement('td');
-      macTd.textContent = client.phone || '';
-
-      const actionsTd = document.createElement('td');
-
-      const resendBtn = document.createElement('button');
-      resendBtn.classList.add('action-btn');
-      resendBtn.textContent = 'Resend Email';
-      resendBtn.addEventListener('click', () =>
-        sendEmail(client, 'reminder', resendBtn)
-      );
-
-      const discBtn = document.createElement('button');
-      discBtn.classList.add('action-btn');
-      discBtn.textContent = 'Disconnection Notice';
-      discBtn.addEventListener('click', async () => {
-        await sendEmail(client, 'disconnection', discBtn);
-        const ok = await updateStatus(client, 'disconnected');
-        if (ok) renderClients();
-      });
-
-      actionsTd.appendChild(resendBtn);
-      actionsTd.appendChild(discBtn);
-
-      row.appendChild(nameTd);
-      row.appendChild(emailTd);
-      row.appendChild(amountTd);
-      row.appendChild(dueTd);
-      row.appendChild(wifiTd);
-      row.appendChild(macTd);
-      row.appendChild(actionsTd);
-
-      disconnectBody.appendChild(row);
-    }
-
-    function renderClients() {
-      tableBody.innerHTML = '';
-      disconnectBody.innerHTML = '';
-      devicesBody.innerHTML = '';
-      emailsBody.innerHTML = '';
-
-      let totalAmount = 0;
-      let collectedAmount = 0;
-
-      const wifiLabels = ['WiFi 1', 'WiFi 2', 'WiFi 3', 'WiFi 4', 'Extension'];
-      const wifiStats = {};
-      wifiLabels.forEach(label => {
-        wifiStats[label] = { total: 0, collected: 0, count: 0 };
-      });
-
-      clients.forEach(client => {
-        const amt = parseAmount(client.amount);
-        totalAmount += amt;
+      const statusHtml = (() => {
         if (client.status === 'paid') {
-          collectedAmount += amt;
+          return '<span class="status-pill status-paid">Paid</span>';
+        } else if (client.status === 'for_disconnection') {
+          return '<span class="status-pill status-disconnect">For Disconnection</span>';
         }
+        return '<span class="status-pill status-pending">Pending</span>';
+      })();
 
-        const wifi = client.wifi || 'Unknown';
-        if (!wifiStats[wifi]) {
-          wifiStats[wifi] = { total: 0, collected: 0, count: 0 };
-        }
-        wifiStats[wifi].total += amt;
-        wifiStats[wifi].count += 1;
-        if (client.status === 'paid') {
-          wifiStats[wifi].collected += amt;
-        }
-      });
+      const mac = client.phone || '';
 
-      const remainingAmount = totalAmount - collectedAmount;
+      tr.innerHTML = `
+        <td>${client.name}</td>
+        <td class="hide-mobile">${client.email}</td>
+        <td>${mac || '<span style="color:#4b5563;">–</span>'}</td>
+        <td><span class="tag tag-wifi">${client.wifi}</span></td>
+        <td class="hide-mobile">${client.dueDate}</td>
+        <td>${formatPeso(parseAmountStr(client.amount))}</td>
+        <td>${statusHtml}</td>
+        <td>
+          <div class="stack-vertical">
+            <div>
+              <button class="btn btn-small btn-soft" data-action="edit" data-id="${client.id}">Edit</button>
+              <button class="btn btn-small btn-danger" data-action="delete" data-id="${client.id}">Delete</button>
+            </div>
+            <div>
+              <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${client.id}">
+                ${client.status === 'paid' ? 'Mark Pending' : 'Mark Paid'}
+              </button>
+              <button class="btn btn-small btn-soft mobile-only" data-action="reminder" data-id="${client.id}">Reminder</button>
+            </div>
+            <div class="hide-mobile">
+              <button class="btn btn-small btn-soft" data-action="reminder" data-id="${client.id}">Reminder</button>
+              <button class="btn btn-small btn-soft" data-action="receipt" data-id="${client.id}">Receipt</button>
+              <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${client.id}">Disconnection</button>
+            </div>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 
-      const totalAmountEl = document.getElementById('totalAmount');
-      const collectedAmountEl = document.getElementById('collectedAmount');
-      const remainingAmountEl = document.getElementById('remainingAmount');
+  function renderDevicesTable() {
+    const tbody = document.querySelector('#devicesTable tbody');
+    tbody.innerHTML = '';
 
-      if (totalAmountEl) totalAmountEl.textContent = formatAmount(totalAmount);
-      if (collectedAmountEl) collectedAmountEl.textContent = formatAmount(collectedAmount);
-      if (remainingAmountEl) remainingAmountEl.textContent = formatAmount(remainingAmount);
-
-      const wifiSummaryBody = document.getElementById('wifiSummaryBody');
-      if (wifiSummaryBody) {
-        wifiSummaryBody.innerHTML = '';
-        Object.keys(wifiStats).forEach(label => {
-          const stats = wifiStats[label];
-          if (stats.count === 0) return;
-
-          const row = document.createElement('tr');
-
-          const wifiTd = document.createElement('td');
-          wifiTd.textContent = label;
-
-          const countTd = document.createElement('td');
-          countTd.textContent = stats.count;
-
-          const totalTd = document.createElement('td');
-          totalTd.textContent = formatAmount(stats.total);
-
-          const collectedTd = document.createElement('td');
-          collectedTd.textContent = formatAmount(stats.collected);
-
-          const remainingTd = document.createElement('td');
-          remainingTd.textContent = formatAmount(stats.total - stats.collected);
-
-          row.appendChild(wifiTd);
-          row.appendChild(countTd);
-          row.appendChild(totalTd);
-          row.appendChild(collectedTd);
-          row.appendChild(remainingTd);
-
-          wifiSummaryBody.appendChild(row);
-        });
-      }
-
-      clients.forEach(client => {
-        addClientRow(client);
-        if (isOverdue(client) && client.status !== 'disconnected') {
-          addDisconnectRow(client);
-        }
-
-        // Devices table
-        const dRow = document.createElement('tr');
-        dRow.innerHTML = `
-          <td>${client.name}</td>
-          <td>${client.phone || ''}</td>
-          <td>${client.wifi || ''}</td>
-          <td>${client.status || 'pending'}</td>
+    clients
+      .filter(c => c.phone && c.phone.trim() !== '')
+      .forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.wifi}</td>
+          <td>${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.email}</td>
         `;
-        devicesBody.appendChild(dRow);
-
-        // Emails table
-        const eRow = document.createElement('tr');
-        eRow.innerHTML = `
-          <td>${client.name}</td>
-          <td>${client.email}</td>
-          <td>${client.wifi || ''}</td>
-          <td>${client.status || 'pending'}</td>
-        `;
-        emailsBody.appendChild(eRow);
+        tbody.appendChild(tr);
       });
-    }
+  }
 
-    async function loadClients() {
-      try {
-        const response = await fetch('/api/clients');
-        const data = await response.json();
-        if (data.clients && Array.isArray(data.clients)) {
-          clients = data.clients;
-          renderClients();
-        }
-      } catch (err) {
-        console.error('Error loading clients:', err);
-      }
-    }
+  function renderEmailsTable() {
+    const tbody = document.querySelector('#emailsTable tbody');
+    tbody.innerHTML = '';
+    clients.forEach(c => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${c.name}</td>
+        <td>${c.email}</td>
+        <td>${c.wifi}</td>
+        <td>${c.status}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 
-    applyGlobalDueDateBtn.addEventListener('click', async () => {
-      const dueDate = document.getElementById('globalDueDate').value;
-      if (!dueDate) {
-        alert('Please select a date.');
-        return;
-      }
-      if (!confirm(`Apply due date ${dueDate} to ALL clients?`)) return;
+  function renderMoneyTables() {
+    const pendingBody = document.querySelector('#pendingTable tbody');
+    const discBody = document.querySelector('#disconnectionTable tbody');
+    pendingBody.innerHTML = '';
+    discBody.innerHTML = '';
 
-      try {
-        const response = await fetch('/api/clients/update-due-dates', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ dueDate })
-        });
+    clients.forEach(c => {
+      const commonRow = `
+        <td>${c.name}</td>
+        <td>${c.email}</td>
+        <td>${formatPeso(parseAmountStr(c.amount))}</td>
+        <td>${c.dueDate}</td>
+        <td>${c.wifi}</td>
+      `;
 
-        const result = await response.json();
-
-        if (!response.ok) {
-          console.error(result);
-          alert('Failed to update due dates: ' + (result.error || 'Unknown error'));
-          return;
-        }
-
-        alert(`Updated due date for ${result.updatedCount ?? 'all'} clients.`);
-        await loadClients();
-      } catch (err) {
-        console.error(err);
-        alert('Error updating due dates. Please check your server.');
+      if (c.status === 'for_disconnection') {
+        const tr = document.createElement('tr');
+        tr.innerHTML = commonRow + `
+          <td>
+            <button class="btn btn-small btn-soft" data-action="reminder" data-id="${c.id}">Resend Reminder</button>
+            <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${c.id}">Disconnection Notice</button>
+          </td>
+        `;
+        discBody.appendChild(tr);
+      } else if (c.status !== 'paid') {
+        const tr = document.createElement('tr');
+        tr.innerHTML = commonRow + `
+          <td>
+            <button class="btn btn-small btn-soft" data-action="reminder" data-id="${c.id}">Reminder</button>
+            <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${c.id}">Mark Paid</button>
+          </td>
+        `;
+        pendingBody.appendChild(tr);
       }
     });
+  }
 
-    addClientBtn.addEventListener('click', async function () {
-      const name = document.getElementById('clientName').value.trim();
-      const email = document.getElementById('clientEmail').value.trim();
-      const phone = document.getElementById('clientPhone').value.trim();
-      const amount = document.getElementById('clientAmount').value.trim();
-      const dueDate = document.getElementById('clientDueDate').value;
-      const wifi = document.getElementById('clientWifi').value;
+  function renderAll() {
+    renderStats();
+    renderClientsTable();
+    renderDevicesTable();
+    renderEmailsTable();
+    renderMoneyTables();
+  }
 
-      if (!name || !email || !amount || !dueDate || !wifi) {
-        alert('Please fill in Name, Email, Amount, Due Date, and WiFi.');
-        return;
-      }
+  // ========== LOAD CLIENTS ==========
+  async function loadClients() {
+    try {
+      const data = await apiGet('/api/clients');
+      clients = data.clients || [];
+      renderAll();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to load clients.');
+    }
+  }
 
-      try {
-        const response = await fetch('/api/clients', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, phone, amount, dueDate, wifi })
-        });
+  // ========== ADD CLIENT ==========
+  document.getElementById('addClientBtn').addEventListener('click', async () => {
+    const name = document.getElementById('clientName').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const mac = document.getElementById('clientMac').value.trim();
+    const amount = document.getElementById('clientAmount').value.trim();
+    const dueDate = document.getElementById('clientDueDate').value;
+    const wifi = document.getElementById('clientWifi').value;
 
-        const result = await response.json();
+    if (!name || !email || !amount || !dueDate || !wifi) {
+      alert('Please fill in name, email, amount, due date, and WiFi.');
+      return;
+    }
 
-        if (response.ok && result.client) {
-          clients.unshift(result.client);
-          renderClients();
-        } else {
-          console.error(result);
-          alert('Failed to save client: ' + (result.error || 'Unknown error'));
-        }
-      } catch (err) {
-        console.error('Error saving client:', err);
-        alert('Error saving client. Please check your server.');
-      }
+    try {
+      const body = { name, email, phone: mac, amount, dueDate, wifi };
+      const data = await apiSend('/api/clients', 'POST', body);
+      clients.unshift(data.client);
+      renderAll();
 
       document.getElementById('clientName').value = '';
       document.getElementById('clientEmail').value = '';
-      document.getElementById('clientPhone').value = '';
+      document.getElementById('clientMac').value = '';
       document.getElementById('clientAmount').value = '';
       document.getElementById('clientDueDate').value = '';
-      document.getElementById('clientWifi').value = '';
-    });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to add client: ' + err.message);
+    }
+  });
 
-    cancelEditBtn.addEventListener('click', closeEditModal);
-    editBackdrop.addEventListener('click', (e) => {
-      if (e.target === editBackdrop) closeEditModal();
-    });
-    saveEditBtn.addEventListener('click', saveEditChanges);
+  document.getElementById('refreshBtn').addEventListener('click', loadClients);
 
-    window.addEventListener('load', () => {
-      setActiveSection('all');
-      loadClients();
-    });
-  </script>
+  // ========== GLOBAL DUE DATE ==========
+  document.getElementById('updateAllDueBtn').addEventListener('click', async () => {
+    const date = document.getElementById('globalDueDate').value;
+    if (!date) {
+      alert('Select a date first.');
+      return;
+    }
+    if (!confirm('Update due date for ALL clients?')) return;
+
+    try {
+      await apiSend('/api/clients/update-due-dates', 'POST', { dueDate: date });
+      clients = clients.map(c => ({ ...c, dueDate: date }));
+      renderAll();
+      alert('All due dates updated.');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update due dates: ' + err.message);
+    }
+  });
+
+  // ========== TABLE ACTIONS ==========
+  document.body.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-id');
+    const action = btn.getAttribute('data-action');
+    const client = clients.find(c => String(c.id) === String(id));
+    if (!client) return;
+
+    try {
+      if (action === 'delete') {
+        if (!confirm(`Delete ${client.name}?`)) return;
+        await fetch(`/api/clients/${id}`, { method: 'DELETE' });
+        clients = clients.filter(c => String(c.id) !== String(id));
+        renderAll();
+      }
+
+      if (action === 'toggleStatus') {
+        const newStatus = client.status === 'paid' ? 'pending' : 'paid';
+        await apiSend(`/api/clients/${id}/status`, 'POST', { status: newStatus });
+        client.status = newStatus;
+        renderAll();
+      }
+
+      if (action === 'edit') {
+        const name = prompt('Name:', client.name) || client.name;
+        const email = prompt('Email:', client.email) || client.email;
+        const mac = prompt('Device MAC:', client.phone || '') || '';
+        const amount = prompt('Amount (₱):', client.amount) || client.amount;
+        const dueDate = prompt('Due Date (YYYY-MM-DD):', client.dueDate) || client.dueDate;
+        const wifi = prompt('WiFi (WiFi 1/2/3/4/Extension):', client.wifi) || client.wifi;
+
+        const body = { name, email, phone: mac, amount, dueDate, wifi };
+        await apiSend(`/api/clients/${id}`, 'PUT', body);
+
+        Object.assign(client, body);
+        renderAll();
+      }
+
+      if (action === 'reminder') {
+        await sendEmailForClient(client, 'reminder');
+      }
+
+      if (action === 'receipt') {
+        await sendEmailForClient(client, 'receipt');
+      }
+
+      if (action === 'disconnect') {
+        // mark as for disconnection in DB
+        await apiSend(`/api/clients/${id}/status`, 'POST', { status: 'for_disconnection' });
+        client.status = 'for_disconnection';
+        await sendEmailForClient(client, 'disconnection');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Action failed: ' + err.message);
+    }
+  });
+
+  // ========== EMAIL SENDER ==========
+  async function sendEmailForClient(client, type) {
+    let subject = '';
+    let message = '';
+
+    if (type === 'receipt') {
+      subject = `Payment Receipt - AirFiber Internet`;
+      message = `Hi ${client.name}, this is your official payment receipt for ₱${parseAmountStr(client.amount)} for your AirFiber Internet subscription.`;
+    } else if (type === 'disconnection') {
+      subject = `Disconnection Notice - AirFiber Internet`;
+      message = `Hi ${client.name}, your account is overdue. This is a disconnection notice for your AirFiber Internet subscription.`;
+    } else {
+      subject = `Billing Reminder - AirFiber Internet`;
+      message = `Hi ${client.name}, this is your billing reminder for ₱${parseAmountStr(client.amount)} due on ${client.dueDate}.`;
+    }
+
+    const payload = {
+      email: client.email,
+      subject,
+      message,
+      type,
+      client: {
+        name: client.name,
+        amount: client.amount,
+        wifi: client.wifi,
+        dueDate: client.dueDate
+      }
+    };
+
+    const res = await apiSend('/api/send-email', 'POST', payload);
+    if (res.success) {
+      alert(`${subject.split(' - ')[0]} sent to ${client.name} at ${client.email}`);
+    }
+  }
+
+  // initial load
+  loadClients();
+</script>
 </body>
 </html>
