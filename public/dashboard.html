@@ -138,6 +138,7 @@
       background: rgba(127,29,29,0.2);
       border: 1px solid rgba(248,113,22,0.35);
       color: #fecaca;
+      width: 100%;
     }
 
     .nav-btn.logout:hover {
@@ -449,6 +450,7 @@
       display: none;
     }
 
+    /* ---------- TABLET ---------- */
     @media (max-width: 900px) {
       .sidebar {
         width: 72px;
@@ -469,6 +471,7 @@
       }
     }
 
+    /* ---------- MOBILE (PORTRAIT) ---------- */
     @media (max-width: 720px) {
       body {
         flex-direction: column;
@@ -478,19 +481,58 @@
         flex-direction: column;
         height: auto;
       }
+
       .sidebar {
         flex-direction: row;
+        align-items: center;
         width: 100%;
-        overflow-x: auto;
         border-right: none;
         border-bottom: 1px solid var(--border-subtle);
+        padding: 8px 10px;
+        gap: 8px;
+        overflow-x: auto;
       }
+
+      .brand {
+        margin-bottom: 0;
+        margin-right: 4px;
+      }
+
+      .brand-title,
+      .brand-sub {
+        display: none;
+      }
+
+      .sidebar-section-title {
+        display: none;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 4px;
+      }
+
+      .nav-btn {
+        width: auto;
+        padding: 6px 10px;
+        font-size: 11px;
+        flex-shrink: 0;
+      }
+
       .nav-btn.logout {
         margin-top: 0;
+        margin-left: auto;
+        width: auto;
+        padding: 6px 10px;
+        font-size: 11px;
       }
+
       .main {
-        height: calc(100vh - 70px);
+        height: auto;
+        min-height: calc(100vh - 56px);
       }
+
       .table-wrap {
         font-size: 11px;
       }
@@ -753,7 +795,7 @@
 </div>
 
 <script>
-  // ========== LOGIN PROTECTION ==========
+  // ---------- LOGIN PROTECTION ----------
   if (localStorage.getItem('af_isLoggedIn') !== 'true') {
     window.location.href = '/';
   }
@@ -766,23 +808,21 @@
     });
   }
 
-  // ========== TABS ==========
+  // ---------- TABS ----------
   const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
   const tabPanels = document.querySelectorAll('.tab-panel');
 
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.getAttribute('data-tab');
-
       tabButtons.forEach(b => b.classList.remove('active'));
       tabPanels.forEach(panel => panel.style.display = 'none');
-
       btn.classList.add('active');
       document.getElementById('tab-' + target).style.display = 'block';
     });
   });
 
-  // ========== API HELPERS ==========
+  // ---------- API HELPERS ----------
   async function apiGet(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error('Request failed');
@@ -802,7 +842,7 @@
     return res.json();
   }
 
-  // ========== STATE ==========
+  // ---------- STATE ----------
   let clients = [];
 
   function parseAmountStr(str) {
@@ -816,7 +856,6 @@
     return '₱' + Number(num).toLocaleString('en-PH', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
   }
 
-  // ========== RENDER FUNCTIONS ==========
   function renderStats() {
     let total = 0;
     let collected = 0;
@@ -836,7 +875,6 @@
     const tbody = document.querySelector('#clientsTable tbody');
     tbody.innerHTML = '';
 
-    // sort by wifi then name
     const sorted = [...clients].sort((a,b) => {
       if (a.wifi < b.wifi) return -1;
       if (a.wifi > b.wifi) return 1;
@@ -967,7 +1005,6 @@
     renderMoneyTables();
   }
 
-  // ========== LOAD CLIENTS ==========
   async function loadClients() {
     try {
       const data = await apiGet('/api/clients');
@@ -979,7 +1016,6 @@
     }
   }
 
-  // ========== ADD CLIENT ==========
   document.getElementById('addClientBtn').addEventListener('click', async () => {
     const name = document.getElementById('clientName').value.trim();
     const email = document.getElementById('clientEmail').value.trim();
@@ -1012,7 +1048,6 @@
 
   document.getElementById('refreshBtn').addEventListener('click', loadClients);
 
-  // ========== GLOBAL DUE DATE ==========
   document.getElementById('updateAllDueBtn').addEventListener('click', async () => {
     const date = document.getElementById('globalDueDate').value;
     if (!date) {
@@ -1032,7 +1067,6 @@
     }
   });
 
-  // ========== TABLE ACTIONS ==========
   document.body.addEventListener('click', async (e) => {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
@@ -1080,7 +1114,6 @@
       }
 
       if (action === 'disconnect') {
-        // mark as for disconnection in DB
         await apiSend(`/api/clients/${id}/status`, 'POST', { status: 'for_disconnection' });
         client.status = 'for_disconnection';
         await sendEmailForClient(client, 'disconnection');
@@ -1091,7 +1124,6 @@
     }
   });
 
-  // ========== EMAIL SENDER ==========
   async function sendEmailForClient(client, type) {
     let subject = '';
     let message = '';
@@ -1126,7 +1158,6 @@
     }
   }
 
-  // initial load
   loadClients();
 </script>
 </body>
