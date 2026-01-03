@@ -2,288 +2,231 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AirFiber Billing - Login</title>
+  <title>AirFiber Internet Billing - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- PWA manifest + iOS meta -->
-  <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#232f3e" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="AirFiber Billing" />
-
   <style>
     :root {
-      --bg: #0b1120;
-      --card-bg: #020617;
-      --border: #1f2937;
+      --bg: #020617;
+      --card: #020617;
       --accent: #f97316;
-      --accent-soft: rgba(249,115,22,0.15);
+      --border-subtle: #1f2937;
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
+      --danger: #dc2626;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #020617 100%);
-      color: var(--text-main);
+      background: radial-gradient(circle at top left, rgba(30,64,175,0.35), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(248,113,22,0.18), transparent 55%),
+                  #020617;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: var(--text-main);
+    }
+
+    .login-shell {
+      width: 100%;
+      max-width: 380px;
       padding: 16px;
     }
 
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
-      border-radius: 16px;
-      padding: 20px 18px 18px 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
-      border: 1px solid rgba(148,163,184,0.25);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .login-card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(249,115,22,0.2), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.14), transparent 60%);
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    .login-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .brand {
+    .logo-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
+      justify-content: center;
     }
 
-    .brand-logo {
+    .logo-icon {
       width: 32px;
       height: 32px;
-      border-radius: 12px;
+      border-radius: 10px;
       background: radial-gradient(circle at 30% 0%, #f97316, #b91c1c);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       color: white;
-      font-size: 16px;
-      box-shadow: 0 0 15px rgba(248,113,22,0.65);
+      font-size: 18px;
+      box-shadow: 0 0 10px rgba(248,113,22,0.6);
     }
 
-    .brand-text-main {
+    .logo-text-title {
       font-size: 18px;
       font-weight: 600;
     }
 
-    .brand-text-sub {
+    .logo-text-sub {
       font-size: 11px;
       color: var(--text-muted);
     }
 
-    h1 {
-      margin: 6px 0 4px 0;
-      font-size: 17px;
+    .login-card {
+      background: rgba(15,23,42,0.96);
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.4);
+      padding: 14px 14px 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+    }
+
+    .login-title {
+      font-size: 16px;
       font-weight: 500;
+      margin-bottom: 4px;
     }
 
-    p.subtitle {
-      margin: 0 0 12px 0;
-      font-size: 12px;
+    .login-sub {
+      font-size: 11px;
       color: var(--text-muted);
-    }
-
-    .field-group {
       margin-bottom: 10px;
     }
 
-    label {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 3px;
-      color: #e5e7eb;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background-color: rgba(15,23,42,0.85);
-      color: var(--text-main);
-      font-size: 13px;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-    }
-
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(249,115,22,0.4);
-      background-color: rgba(15,23,42,0.95);
-    }
-
-    .helper {
-      font-size: 11px;
-      color: var(--text-muted);
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
       margin-bottom: 8px;
     }
 
-    .login-btn {
+    .field label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .field input {
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      padding: 7px 9px;
+      font-size: 13px;
+      background: rgba(15,23,42,0.98);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(249,115,22,0.45);
+    }
+
+    .btn-login {
       width: 100%;
-      padding: 9px 0;
+      margin-top: 10px;
       border-radius: 999px;
       border: none;
-      background-image: linear-gradient(135deg, #facc15, #f97316);
-      color: #111827;
-      font-weight: 600;
-      font-size: 14px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
-      margin-top: 4px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-      transition: transform 0.08s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      color: #111827;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+      transition: transform 0.08s, box-shadow 0.12s, filter 0.12s;
     }
 
-    .login-btn:hover {
+    .btn-login:hover {
       filter: brightness(1.05);
-      box-shadow: 0 9px 24px rgba(0,0,0,0.45);
       transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.6);
     }
 
-    .login-btn:active {
-      filter: brightness(0.98);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-      transform: translateY(0) scale(0.97);
+    .btn-login:active {
+      transform: scale(0.97);
+      box-shadow: none;
     }
 
-    .warning {
-      background-color: var(--accent-soft);
-      color: #fed7aa;
-      border-radius: 8px;
-      padding: 6px 8px;
+    .error {
+      margin-top: 8px;
       font-size: 11px;
-      margin-bottom: 10px;
-      border: 1px solid rgba(249,115,22,0.4);
-    }
-
-    .footnote {
-      margin-top: 10px;
-      font-size: 10px;
-      color: var(--text-muted);
-      text-align: center;
+      color: #fecaca;
+      display: none;
     }
 
     @media (max-width: 480px) {
       .login-card {
-        padding: 18px 14px 14px 14px;
-      }
-
-      .brand-logo {
-        width: 30px;
-        height: 30px;
-      }
-
-      .brand-text-main {
-        font-size: 16px;
+        padding: 12px 12px 14px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <div class="login-inner">
-      <div class="brand">
-        <div class="brand-logo">A</div>
-        <div>
-          <div class="brand-text-main">AirFiber Internet Billing</div>
-          <div class="brand-text-sub">Private Admin Portal</div>
-        </div>
-      </div>
-
-      <h1>Sign in</h1>
-      <p class="subtitle">Enter your admin credentials to access the dashboard.</p>
-
-      <div class="warning">
-        Admin access only. Make sure no one else can see your screen when logging in.
-      </div>
-
-      <div class="field-group">
-        <label for="email">Admin Email</label>
-        <input type="email" id="email" placeholder="admin email" autocomplete="off" />
-      </div>
-
-      <div class="field-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="password" autocomplete="off" />
-      </div>
-
-      <div class="helper">
-        Note: Only the correct admin email + password can log in.
-      </div>
-
-      <button class="login-btn" id="loginBtn">Continue</button>
-
-      <div class="footnote">
-        © <span id="yearSpan"></span> AirFiber Internet Billing
-      </div>
+<div class="login-shell">
+  <div class="logo-row">
+    <div class="logo-icon">A</div>
+    <div>
+      <div class="logo-text-title">AirFiber Billing</div>
+      <div class="logo-text-sub">Secure admin access</div>
     </div>
   </div>
 
-  <script>
-    // PWA: register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(function(err) {
-        console.log('Service worker registration failed:', err);
-      });
+  <div class="login-card">
+    <div class="login-title">Sign in</div>
+    <div class="login-sub">Enter your admin email and password.</div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmailInput">Email</label>
+        <input type="email" id="loginEmailInput" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="loginPasswordInput">Password</label>
+        <input type="password" id="loginPasswordInput" autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn-login">Login</button>
+      <div id="loginError" class="error">Incorrect email or password.</div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Default credentials if user has never changed them in the Portal > Login Settings
+  const DEFAULT_LOGIN_EMAIL = 'zycpets@gmail.com';
+  const DEFAULT_LOGIN_PASSWORD = 'admin321';
+
+  function getCurrentLoginCredentials() {
+    const savedEmail = localStorage.getItem('af_loginEmail') || DEFAULT_LOGIN_EMAIL;
+    const savedPass = localStorage.getItem('af_loginPassword') || DEFAULT_LOGIN_PASSWORD;
+    return { email: savedEmail, password: savedPass };
+  }
+
+  // Prefill email field with saved email (so you see which account is set)
+  window.addEventListener('DOMContentLoaded', () => {
+    const { email } = getCurrentLoginCredentials();
+    const emailInput = document.getElementById('loginEmailInput');
+    if (emailInput && email) {
+      emailInput.value = email;
     }
+  });
 
-    document.getElementById('yearSpan').textContent = new Date().getFullYear();
+  const form = document.getElementById('loginForm');
+  const errorBox = document.getElementById('loginError');
 
-    const CORRECT_EMAIL = 'zycpets@gmail.com';
-    const CORRECT_PASSWORD = 'admin321';
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const emailInput = document.getElementById('loginEmailInput');
+    const passInput = document.getElementById('loginPasswordInput');
 
-    // If already logged in, go straight to dashboard
-    if (localStorage.getItem('af_isLoggedIn') === 'true') {
-      window.location.href = '/dashboard';
+    const email = emailInput.value.trim();
+    const pass = passInput.value.trim();
+
+    const creds = getCurrentLoginCredentials();
+
+    if (email === creds.email && pass === creds.password) {
+      localStorage.setItem('af_isLoggedIn', 'true');
+      window.location.href = '/dashboard.html';
+    } else {
+      if (errorBox) {
+        errorBox.style.display = 'block';
+        errorBox.textContent = 'Incorrect email or password.';
+      }
     }
-
-    document.getElementById('loginBtn').addEventListener('click', function () {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      if (email === CORRECT_EMAIL && password === CORRECT_PASSWORD) {
-        // mark as logged in
-        localStorage.setItem('af_isLoggedIn', 'true');
-        window.location.href = '/dashboard';
-      } else {
-        alert('Incorrect email or password.');
-      }
-    });
-
-    // Allow Enter key to submit
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        document.getElementById('loginBtn').click();
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>

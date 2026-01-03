@@ -103,13 +103,17 @@
       font-size: 12px;
       cursor: pointer;
       text-align: left;
-      transition: background 0.15s, color 0.15s, transform 0.05s;
+      transition: background 0.15s, color 0.15s, transform 0.08s;
     }
 
     .nav-btn:hover {
       background: #111827;
       color: var(--text-main);
       transform: translateY(-1px);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.97);
     }
 
     .nav-btn.active {
@@ -127,7 +131,7 @@
       border-radius: 999px;
       font-size: 12px;
       cursor: pointer;
-      transition: background 0.15s, transform 0.05s, box-shadow 0.12s;
+      transition: background 0.15s, transform 0.08s, box-shadow 0.12s;
       align-self: flex-start;
       white-space: nowrap;
     }
@@ -136,6 +140,11 @@
       background: rgba(185,28,28,0.9);
       transform: translateY(-1px);
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .logout-btn:active {
+      transform: scale(0.97);
+      box-shadow: none;
     }
 
     /* -------- MAIN -------- */
@@ -177,7 +186,7 @@
       overflow-y: auto;
     }
 
-    /* -------- STATS -------- */
+    /* -------- STATS CARDS (used only inside Payments tab now) -------- */
     .cards-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -215,6 +224,22 @@
 
     .card-title { font-size: 14px; font-weight: 500; }
     .card-sub   { font-size: 11px; color: var(--text-muted); }
+
+    /* -------- TAB PANELS + ANIMATION -------- */
+    .tab-panel {
+      opacity: 0;
+      transform: translateY(4px);
+      pointer-events: none;
+      display: none;
+      transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+    }
+
+    .tab-panel.active-panel {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      display: block;
+    }
 
     /* -------- FORM -------- */
     .form-grid {
@@ -290,6 +315,11 @@
     .btn-ghost   { background: transparent; border: 1px solid rgba(55,65,81,0.9); color: var(--text-muted); }
 
     .btn-small { padding: 3px 8px; font-size: 11px; }
+
+    .btn:active {
+      transform: scale(0.96);
+      box-shadow: none;
+    }
 
     .table-wrap { overflow-x: auto; margin-top: 6px; }
 
@@ -405,7 +435,7 @@
         flex-shrink: 0;
       }
 
-      /* Logout: small pill under nav, right side, NOT huge */
+      /* Logout: small pill under nav, right side */
       .logout-btn {
         margin-top: 2px;
         margin-left: auto;
@@ -427,6 +457,10 @@
       }
 
       .actions { gap: 3px; }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
     }
   </style>
 </head>
@@ -446,7 +480,7 @@
         <button class="nav-btn active" data-tab="all-clients">All Clients</button>
         <button class="nav-btn" data-tab="devices">Devices</button>
         <button class="nav-btn" data-tab="emails">Email Addresses</button>
-        <button class="nav-btn" data-tab="money">Money Collection</button>
+        <button class="nav-btn" data-tab="money">Payments</button>
         <button class="nav-btn" data-tab="portal">Portal</button>
       </div>
     </div>
@@ -458,33 +492,14 @@
     <header class="topbar">
       <div>
         <div class="topbar-title">Billing Dashboard</div>
-        <div class="topbar-sub">Manage AirFiber Internet billing, reminders, and collections</div>
+        <div class="topbar-sub">Manage AirFiber Internet billing, reminders, and payments</div>
       </div>
       <div class="pill-status">Online • Render</div>
     </header>
 
     <section class="main-content">
-      <!-- STATS -->
-      <div class="cards-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Amount to Collect</div>
-          <div class="stat-value" id="statTotal">₱0</div>
-          <div class="stat-sub">Sum of all client amounts</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Collected Amount</div>
-          <div class="stat-value" id="statCollected">₱0</div>
-          <div class="stat-sub">Clients marked as Paid</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Remaining to Collect</div>
-          <div class="stat-value" id="statRemaining">₱0</div>
-          <div class="stat-sub">Pending or For Disconnection</div>
-        </div>
-      </div>
-
       <!-- ALL CLIENTS TAB -->
-      <div class="card tab-panel" id="tab-all-clients">
+      <div class="card tab-panel active-panel" id="tab-all-clients">
         <div class="card-header">
           <div>
             <div class="card-title">All Clients</div>
@@ -550,7 +565,7 @@
       </div>
 
       <!-- DEVICES TAB -->
-      <div class="card tab-panel" id="tab-devices" style="display:none;">
+      <div class="card tab-panel" id="tab-devices">
         <div class="card-header">
           <div>
             <div class="card-title">Devices Overview</div>
@@ -573,7 +588,7 @@
       </div>
 
       <!-- EMAILS TAB -->
-      <div class="card tab-panel" id="tab-emails" style="display:none;">
+      <div class="card tab-panel" id="tab-emails">
         <div class="card-header">
           <div>
             <div class="card-title">Client Email List</div>
@@ -595,16 +610,35 @@
         </div>
       </div>
 
-      <!-- MONEY TAB -->
-      <div class="card tab-panel" id="tab-money" style="display:none;">
+      <!-- PAYMENTS (MONEY) TAB -->
+      <div class="card tab-panel" id="tab-money">
         <div class="card-header">
           <div>
-            <div class="card-title">Money Collection</div>
-            <div class="card-sub">Who has paid, who is pending, and who is for disconnection</div>
+            <div class="card-title">Payments</div>
+            <div class="card-sub">Totals, collected, remaining, and disconnections</div>
           </div>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:8px;">
+        <!-- moved HERE: stats only visible in Payments -->
+        <div class="cards-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Amount to Collect</div>
+            <div class="stat-value" id="statTotal">₱0</div>
+            <div class="stat-sub">Sum of all client amounts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Collected Amount</div>
+            <div class="stat-value" id="statCollected">₱0</div>
+            <div class="stat-sub">Clients marked as Paid</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Remaining to Collect</div>
+            <div class="stat-value" id="statRemaining">₱0</div>
+            <div class="stat-sub">Pending or For Disconnection</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
           <div>
             <div class="card-sub" style="margin-bottom:4px;">Global Due Date (for all clients)</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -654,7 +688,7 @@
       </div>
 
       <!-- PORTAL TAB -->
-      <div class="card tab-panel" id="tab-portal" style="display:none;">
+      <div class="card tab-panel" id="tab-portal">
         <div class="card-header">
           <div>
             <div class="card-title">Router Portal (Coming Soon)</div>
@@ -667,13 +701,42 @@
           For now, continue using the router interfaces directly. When your IPs are fixed,
           we can add buttons here like “Main Router”, “WiFi 2”, etc.
         </p>
+
+        <!-- LOGIN SETTINGS SECTION -->
+        <div class="card" style="margin-top:12px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Login Settings</div>
+              <div class="card-sub">
+                Change the email and password required on the login page.
+              </div>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="loginEmail">Login email</label>
+              <input type="email" id="loginEmail" placeholder="admin@example.com" />
+            </div>
+            <div class="form-field">
+              <label for="loginPassword">Login password</label>
+              <input type="password" id="loginPassword" placeholder="••••••••" />
+            </div>
+          </div>
+          <div style="margin-top:8px; display:flex; justify-content:flex-end; gap:8px;">
+            <button class="btn btn-soft btn-small" id="loadLoginSettingsBtn">Reset to current</button>
+            <button class="btn btn-primary btn-small" id="saveLoginSettingsBtn">Save Login</button>
+          </div>
+          <div id="loginSettingsStatus" class="card-sub" style="margin-top:6px; display:none; color:#bbf7d0;">
+            Saved! This will apply next time you log in.
+          </div>
+        </div>
       </div>
     </section>
   </main>
 </div>
 
 <script>
-  // LOGIN PROTECTION (same as before)
+  // LOGIN PROTECTION
   if (localStorage.getItem('af_isLoggedIn') !== 'true') {
     window.location.href = '/';
   }
@@ -684,7 +747,7 @@
     window.location.href = '/';
   });
 
-  // TABS
+  // TABS WITH ANIMATION
   const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
   const tabPanels = document.querySelectorAll('.tab-panel');
 
@@ -692,9 +755,13 @@
     btn.addEventListener('click', () => {
       const target = btn.getAttribute('data-tab');
       tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(p => p.style.display = 'none');
+      tabPanels.forEach(p => p.classList.remove('active-panel'));
+
       btn.classList.add('active');
-      document.getElementById('tab-' + target).style.display = 'block';
+      const panel = document.getElementById('tab-' + target);
+      if (panel) {
+        panel.classList.add('active-panel');
+      }
     });
   });
 
@@ -985,6 +1052,7 @@
         await apiSend(`/api/clients/${id}/status`, 'POST', { status: 'for_disconnection' });
         client.status = 'for_disconnection';
         await sendEmailForClient(client, 'disconnection');
+        renderAll();
       }
     } catch (err) {
       console.error(err);
@@ -1026,6 +1094,65 @@
     }
   }
 
+  // ------- LOGIN SETTINGS (CHANGE LOGIN EMAIL + PASSWORD) -------
+  function loadLoginSettingsForm() {
+    const emailInput = document.getElementById('loginEmail');
+    const passInput = document.getElementById('loginPassword');
+    if (!emailInput || !passInput) return;
+
+    const savedEmail = localStorage.getItem('af_loginEmail') || 'zycpets@gmail.com';
+    const savedPass = localStorage.getItem('af_loginPassword') || 'admin321';
+
+    emailInput.value = savedEmail;
+    passInput.value = savedPass;
+  }
+
+  const loadBtn = document.getElementById('loadLoginSettingsBtn');
+  const saveBtn = document.getElementById('saveLoginSettingsBtn');
+  const statusEl = document.getElementById('loginSettingsStatus');
+
+  if (loadBtn) {
+    loadBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      loadLoginSettingsForm();
+      if (statusEl) {
+        statusEl.textContent = 'Reset to current saved login.';
+        statusEl.style.display = 'block';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
+      }
+    });
+  }
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      if (!emailInput || !passInput) return;
+
+      const email = emailInput.value.trim();
+      const pass = passInput.value.trim();
+
+      if (!email || !pass) {
+        alert('Please enter both login email and password.');
+        return;
+      }
+
+      localStorage.setItem('af_loginEmail', email);
+      localStorage.setItem('af_loginPassword', pass);
+
+      if (statusEl) {
+        statusEl.textContent = 'Saved! New login will apply next time you log in.';
+        statusEl.style.display = 'block';
+        setTimeout(() => { statusEl.style.display = 'none'; }, 2500);
+      }
+    });
+  }
+
+  // Initialize login settings form on load
+  loadLoginSettingsForm();
+
+  // INITIAL LOAD OF CLIENTS
   loadClients();
 </script>
 </body>
