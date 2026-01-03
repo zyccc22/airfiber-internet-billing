@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // === Brevo email config (from environment variables) ===
 const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const SENDER_EMAIL = process.env.SENDER_EMAIL || 'no-reply@example.com';
+const SENDER_EMAIL = 'internetbilling.bh@gmail.com';
 const SENDER_NAME = 'AirFiber Internet Billing';
 
 // Middleware
