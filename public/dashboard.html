@@ -5,107 +5,309 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Billing Reminder - Dashboard</title>
   <style>
+    :root {
+      --bg: #f5f5f5;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+      --accent: #ff9900;
+      --accent-dark: #f97316;
+      --danger: #b80000;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --sidebar-bg: #111827;
+      --sidebar-text: #e5e7eb;
+      --sidebar-active: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+    }
+
+    /* Layout with left sidebar */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-header {
+      padding: 8px 8px 4px 8px;
+    }
+
+    .sidebar-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .nav-item {
+      text-align: left;
+      border: none;
+      background: transparent;
+      color: var(--sidebar-text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.08s ease;
+    }
+
+    .nav-item:hover {
+      background-color: #1f2937;
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      background-color: var(--sidebar-active);
+      font-weight: bold;
+    }
+
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
     }
 
     header {
       background-color: #232f3e;
       color: white;
-      padding: 12px 20px;
+      padding: 10px 12px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 18px;
       margin: 0;
+      flex: 1;
     }
 
     .user-info {
-      font-size: 14px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .sidebar-toggle {
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: none; /* show on mobile only */
+      margin-right: 6px;
     }
 
     main {
-      padding: 20px;
+      padding: 12px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
     }
 
     .card {
-      background: #fff;
-      padding: 16px;
+      background: var(--card-bg);
+      padding: 12px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 12px;
     }
 
     .card h2 {
       margin-top: 0;
-      font-size: 18px;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .client-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .client-form input,
     .client-form select {
-      margin-right: 8px;
-      margin-bottom: 8px;
       padding: 6px;
       font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      flex: 1 1 150px;
+      min-width: 130px;
     }
 
     .client-form button {
-      padding: 6px 12px;
+      padding: 8px 14px;
       font-size: 14px;
+      border-radius: 999px;
       border: none;
-      border-radius: 4px;
-      background-color: #ff9900;
-      cursor: pointer;
+      background-image: linear-gradient(135deg, #facc15, #f97316);
+      color: #111827;
       font-weight: bold;
+      cursor: pointer;
+      flex: 0 0 auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: box-shadow 0.15s ease, transform 0.08s ease;
+    }
+
+    .client-form button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    .client-form button:active {
+      transform: translateY(0) scale(0.97);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 4px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 8px;
+      min-width: 520px;
     }
 
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
-      font-size: 14px;
+      padding: 6px;
+      font-size: 13px;
+      text-align: left;
+      vertical-align: top;
     }
 
     th {
       background-color: #f0f0f0;
-      text-align: left;
     }
 
+    small {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .summary-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .summary-item {
+      flex: 1 1 160px;
+      min-width: 150px;
+      background-color: #f9fafb;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 2px;
+    }
+
+    .summary-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--text-main);
+    }
+
+    /* BUTTONS – nicer + animated */
     .send-btn,
     .delete-btn,
-    .action-btn {
-      padding: 4px 8px;
-      font-size: 12px;
+    .action-btn,
+    .edit-btn,
+    .inline-send-btn {
+      padding: 4px 10px;
+      font-size: 11px;
       border: none;
-      border-radius: 4px;
-      background-color: #0073bb;
-      color: white;
+      border-radius: 999px;
+      background-image: linear-gradient(135deg, #0ea5e9, #0369a1);
+      color: #ffffff;
       cursor: pointer;
       margin-right: 4px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+    }
+
+    .send-btn:hover,
+    .delete-btn:hover,
+    .action-btn:hover,
+    .edit-btn:hover,
+    .inline-send-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    .send-btn:active,
+    .delete-btn:active,
+    .action-btn:active,
+    .edit-btn:active,
+    .inline-send-btn:active {
+      transform: translateY(0) scale(0.97);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
     }
 
     .delete-btn {
-      background-color: #b80000;
+      background-image: linear-gradient(135deg, #dc2626, #991b1b);
+    }
+
+    .edit-btn {
+      background-image: linear-gradient(135deg, #6b7280, #374151);
+    }
+
+    .inline-send-btn.reminder-btn {
+      background-image: linear-gradient(135deg, #f97316, #ea580c);
+    }
+
+    .inline-send-btn.receipt-btn {
+      background-image: linear-gradient(135deg, #22c55e, #16a34a);
     }
 
     .send-btn:disabled,
-    .action-btn:disabled {
-      background-color: #aaa;
+    .action-btn:disabled,
+    .inline-send-btn:disabled {
+      background-image: none;
+      background-color: #9ca3af;
+      box-shadow: none;
       cursor: default;
-    }
-
-    .paid-checkbox {
-      transform: scale(1.2);
     }
 
     .status-pill {
@@ -117,112 +319,495 @@
     }
 
     .status-pending {
-      background-color: #ff9900;
+      background-color: var(--accent);
     }
 
     .status-paid {
-      background-color: #28a745;
+      background-color: #22c55e;
     }
 
     .status-disconnected {
-      background-color: #b80000;
+      background-color: var(--danger);
     }
 
-    small {
+    .client-name-main {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .inline-paid-label {
+      font-size: 11px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .paid-checkbox {
+      transform: scale(1.1);
+    }
+
+    /* Edit modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      width: 95%;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .modal h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+
+    .modal .modal-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 8px;
+    }
+
+    .modal label {
       font-size: 12px;
-      color: #666;
+      margin-bottom: 2px;
+      color: var(--text-muted);
+    }
+
+    .modal input,
+    .modal select {
+      padding: 6px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      background: #e5e7eb;
+      color: #111827;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-save {
+      background: var(--accent-dark);
+      color: #ffffff;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+
+    section {
+      display: none;
+    }
+
+    section.active-section {
+      display: block;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: -240px;
+        z-index: 40;
+        transition: left 0.2s ease-out;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .main-area {
+        margin-left: 0;
+      }
+
+      .sidebar-toggle {
+        display: inline-block;
+      }
+
+      header {
+        padding: 10px 10px;
+      }
+
+      header h1 {
+        font-size: 16px;
+      }
+
+      .user-info {
+        font-size: 11px;
+      }
+
+      main {
+        padding: 8px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      .client-form {
+        flex-direction: column;
+      }
+
+      .client-form input,
+      .client-form select,
+      .client-form button {
+        width: 100%;
+        flex: 1 1 auto;
+      }
+
+      table {
+        min-width: 480px;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Billing Reminder Dashboard</h1>
-    <div class="user-info">
-      Logged in as: <strong>Admin</strong>
-    </div>
-  </header>
-
-  <main>
-    <!-- Global billing date -->
-    <div class="card">
-      <h2>Set Billing Date for All Clients</h2>
-      <div class="client-form">
-        <input type="date" id="globalDueDate" />
-        <button id="applyGlobalDueDateBtn">Apply to All Clients</button>
+  <div class="layout">
+    <!-- LEFT SIDEBAR TABS -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">AirFiber Billing</div>
+        <div class="sidebar-subtitle">Management Portal</div>
       </div>
-      <small>Pick the billing date (e.g. 2025-02-26). This will update the due date of every client, without changing their devices or other details.</small>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-section="all">ALL CLIENTS</button>
+        <button class="nav-item" data-section="devices">DEVICES</button>
+        <button class="nav-item" data-section="emails">EMAIL ADDRESSES</button>
+        <button class="nav-item" data-section="money">MONEY COLLECTION</button>
+        <button class="nav-item" data-section="portal">PORTAL</button>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-area">
+      <header>
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <h1>Billing Reminder Dashboard</h1>
+        <div class="user-info">
+          Logged in as: <strong>Admin</strong>
+        </div>
+      </header>
+
+      <main>
+        <!-- MONEY COLLECTION TAB -->
+        <section id="section-money">
+          <div class="card">
+            <h2>Billing Summary</h2>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <div class="summary-label">Total to Collect</div>
+                <div class="summary-value" id="totalAmount">₱0.00</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Collected Amount</div>
+                <div class="summary-value" id="collectedAmount">₱0.00</div>
+              </div>
+              <div class="summary-item">
+                <div class="summary-label">Remaining to Collect</div>
+                <div class="summary-value" id="remainingAmount">₱0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Set Billing Date for All Clients</h2>
+            <div class="client-form">
+              <input type="date" id="globalDueDate" />
+              <button id="applyGlobalDueDateBtn">Apply to All Clients</button>
+            </div>
+            <small>Pick the billing date (e.g. 2025-02-26). This will update the due date of every client, without changing their devices or other details.</small>
+          </div>
+
+          <div class="card">
+            <h2>WiFi Group Summary</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>WiFi Group</th>
+                    <th>Clients</th>
+                    <th>Total Amount</th>
+                    <th>Collected</th>
+                    <th>Remaining</th>
+                  </tr>
+                </thead>
+                <tbody id="wifiSummaryBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALL CLIENTS TAB -->
+        <section id="section-all" class="active-section">
+          <div class="card">
+            <h2>Add Client</h2>
+            <div class="client-form">
+              <input type="text" id="clientName" placeholder="Client Name" />
+              <input type="email" id="clientEmail" placeholder="Email Address" />
+              <input type="text" id="clientPhone" placeholder="Device MAC (optional)" />
+              <input type="text" id="clientAmount" placeholder="Amount Due" />
+              <input type="date" id="clientDueDate" />
+
+              <select id="clientWifi">
+                <option value="">Select WiFi</option>
+                <option value="WiFi 1">WiFi 1</option>
+                <option value="WiFi 2">WiFi 2</option>
+                <option value="WiFi 3">WiFi 3</option>
+                <option value="WiFi 4">WiFi 4</option>
+                <option value="Extension">Extension</option>
+              </select>
+
+              <button id="addClientBtn">Add Client</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>All Clients</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Device MAC</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="clientTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>FOR DISCONNECTION (Overdue & Not Paid)</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Client Name</th>
+                    <th>Email</th>
+                    <th>Amount</th>
+                    <th>Due Date</th>
+                    <th>WiFi</th>
+                    <th>Device MAC</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="disconnectTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- DEVICES TAB -->
+        <section id="section-devices">
+          <div class="card">
+            <h2>Devices (by MAC Address)</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Client Name</th>
+                    <th>Device MAC</th>
+                    <th>WiFi</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="devicesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- EMAIL ADDRESSES TAB -->
+        <section id="section-emails">
+          <div class="card">
+            <h2>Email Addresses</h2>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Client Name</th>
+                    <th>Email</th>
+                    <th>WiFi</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="emailsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PORTAL TAB (placeholder for routers) -->
+        <section id="section-portal">
+          <div class="card">
+            <h2>Router Portal (Coming Soon)</h2>
+            <p>
+              This section will be used to access your AirFiber routers (Main + 4 others).
+              Once each router has a fixed LAN IP, we can add quick shortcut buttons here to
+              open their admin pages.
+            </p>
+            <ol>
+              <li>Give each router a <strong>fixed local IP</strong> (e.g. 192.168.1.1, 192.168.1.2, ...).</li>
+              <li>Write those IPs down so you don’t forget them.</li>
+              <li>Later we’ll add buttons here like “Open Main Router”, “Open WiFi 2 Router”, etc.</li>
+            </ol>
+            <p>
+              Below I’ll explain the exact steps for setting those fixed IPs on your routers.
+            </p>
+          </div>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <div class="card">
-      <h2>Add Client</h2>
-      <div class="client-form">
-        <input type="text" id="clientName" placeholder="Client Name" />
-        <input type="email" id="clientEmail" placeholder="Email Address" />
-        <input type="text" id="clientPhone" placeholder="Device MAC (optional)" />
-        <input type="text" id="clientAmount" placeholder="Amount Due" />
-        <input type="date" id="clientDueDate" />
-
-        <select id="clientWifi">
-          <option value="">Select WiFi</option>
+  <!-- Edit modal -->
+  <div class="modal-backdrop" id="editBackdrop">
+    <div class="modal">
+      <h3>Edit Client</h3>
+      <div class="modal-row">
+        <label for="editName">Client Name</label>
+        <input type="text" id="editName" />
+      </div>
+      <div class="modal-row">
+        <label for="editEmail">Email Address</label>
+        <input type="email" id="editEmail" />
+      </div>
+      <div class="modal-row">
+        <label for="editPhone">Device MAC (optional)</label>
+        <input type="text" id="editPhone" />
+      </div>
+      <div class="modal-row">
+        <label for="editAmount">Amount Due</label>
+        <input type="text" id="editAmount" />
+      </div>
+      <div class="modal-row">
+        <label for="editDueDate">Due Date</label>
+        <input type="date" id="editDueDate" />
+      </div>
+      <div class="modal-row">
+        <label for="editWifi">WiFi Group</label>
+        <select id="editWifi">
           <option value="WiFi 1">WiFi 1</option>
           <option value="WiFi 2">WiFi 2</option>
           <option value="WiFi 3">WiFi 3</option>
           <option value="WiFi 4">WiFi 4</option>
           <option value="Extension">Extension</option>
         </select>
-
-        <button id="addClientBtn">Add Client</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+        <button class="btn-save" id="saveEditBtn">Save changes</button>
       </div>
     </div>
-
-    <div class="card">
-      <h2>All Clients</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Client Name</th>
-            <th>Email</th>
-            <th>Device MAC</th>
-            <th>Amount</th>
-            <th>Due Date</th>
-            <th>WiFi</th>
-            <th>Status</th>
-            <th>Paid?</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="clientTableBody">
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card">
-      <h2>FOR DISCONNECTION (Overdue & Not Paid)</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Client Name</th>
-            <th>Email</th>
-            <th>Amount</th>
-            <th>Due Date</th>
-            <th>WiFi</th>
-            <th>Device MAC</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="disconnectTableBody">
-        </tbody>
-      </table>
-    </div>
-  </main>
+  </div>
 
   <script>
+    // ====== Sidebar nav & sections ======
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const navButtons = document.querySelectorAll('.nav-item');
+    const sections = {
+      all: document.getElementById('section-all'),
+      devices: document.getElementById('section-devices'),
+      emails: document.getElementById('section-emails'),
+      money: document.getElementById('section-money'),
+      portal: document.getElementById('section-portal'),
+    };
+
+    function setActiveSection(sectionKey) {
+      Object.keys(sections).forEach(key => {
+        if (key === sectionKey) {
+          sections[key].classList.add('active-section');
+        } else {
+          sections[key].classList.remove('active-section');
+        }
+      });
+
+      navButtons.forEach(btn => {
+        if (btn.dataset.section === sectionKey) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      sidebar.classList.remove('open');
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setActiveSection(btn.dataset.section);
+      });
+    });
+
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // ====== Dashboard logic ======
     const addClientBtn = document.getElementById('addClientBtn');
     const applyGlobalDueDateBtn = document.getElementById('applyGlobalDueDateBtn');
     const tableBody = document.getElementById('clientTableBody');
     const disconnectBody = document.getElementById('disconnectTableBody');
+    const devicesBody = document.getElementById('devicesTableBody');
+    const emailsBody = document.getElementById('emailsTableBody');
+
+    const editBackdrop = document.getElementById('editBackdrop');
+    const editNameInput = document.getElementById('editName');
+    const editEmailInput = document.getElementById('editEmail');
+    const editPhoneInput = document.getElementById('editPhone');
+    const editAmountInput = document.getElementById('editAmount');
+    const editDueDateInput = document.getElementById('editDueDate');
+    const editWifiSelect = document.getElementById('editWifi');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveEditBtn = document.getElementById('saveEditBtn');
 
     let clients = [];
+    let editingClient = null;
 
     function isOverdue(client) {
       if (!client.dueDate) return false;
@@ -233,11 +818,23 @@
       return due < today && client.status !== 'paid';
     }
 
+    function parseAmount(value) {
+      if (value === null || value === undefined) return 0;
+      const cleaned = String(value).replace(/[₱,]/g, '').trim();
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function formatAmount(num) {
+      return '₱' + num.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
     function buildEmailMessage(client, type) {
       if (type === 'reminder') {
         return `
-Hello ${client.name},
-
 This is a friendly reminder that your bill of ₱${client.amount} for ${client.wifi} is due on ${client.dueDate}.
 
 If you have already paid, please ignore this message.
@@ -246,8 +843,6 @@ Thank you!
         `.trim();
       } else if (type === 'receipt') {
         return `
-Hello ${client.name},
-
 We have received your payment of ₱${client.amount} for ${client.wifi} (due date ${client.dueDate}).
 
 Thank you for your payment!
@@ -257,8 +852,6 @@ AirFiber Internet Billing
         `.trim();
       } else {
         return `
-Hello ${client.name},
-
 Our records show that your bill of ₱${client.amount} for ${client.wifi}, due on ${client.dueDate}, is now overdue.
 
 Your connection is scheduled FOR DISCONNECTION if payment is not received as soon as possible.
@@ -281,6 +874,7 @@ Thank you.
       const message = buildEmailMessage(client, type);
 
       button.disabled = true;
+      const originalText = button.textContent;
       button.textContent = 'Sending...';
 
       try {
@@ -310,9 +904,7 @@ Thank you.
         alert('Error sending email. Please check your internet connection or server.');
         button.disabled = false;
       } finally {
-        if (type === 'reminder') button.textContent = 'Send Reminder';
-        if (type === 'receipt') button.textContent = 'Send Receipt';
-        if (type === 'disconnection') button.textContent = 'Disconnection Notice';
+        button.textContent = originalText;
       }
     }
 
@@ -375,35 +967,101 @@ Thank you.
       return span;
     }
 
+    function openEditModal(client) {
+      editingClient = client;
+      editNameInput.value = client.name;
+      editEmailInput.value = client.email;
+      editPhoneInput.value = client.phone || '';
+      editAmountInput.value = client.amount;
+      editDueDateInput.value = client.dueDate || '';
+      editWifiSelect.value = client.wifi || 'WiFi 1';
+      editBackdrop.classList.add('show');
+    }
+
+    function closeEditModal() {
+      editingClient = null;
+      editBackdrop.classList.remove('show');
+    }
+
+    async function saveEditChanges() {
+      if (!editingClient) return;
+
+      const updated = {
+        id: editingClient.id,
+        name: editNameInput.value.trim(),
+        email: editEmailInput.value.trim(),
+        phone: editPhoneInput.value.trim(),
+        amount: editAmountInput.value.trim(),
+        dueDate: editDueDateInput.value,
+        wifi: editWifiSelect.value
+      };
+
+      if (!updated.name || !updated.email || !updated.amount || !updated.dueDate || !updated.wifi) {
+        alert('Please fill in Name, Email, Amount, Due Date, and WiFi.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/clients/${updated.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updated)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error(result);
+          alert('Failed to update client: ' + (result.error || 'Unknown error'));
+          return;
+        }
+
+        const index = clients.findIndex(c => c.id === updated.id);
+        if (index !== -1) {
+          clients[index] = { ...clients[index], ...updated };
+        }
+
+        closeEditModal();
+        renderClients();
+      } catch (err) {
+        console.error(err);
+        alert('Error updating client. Please check your server.');
+      }
+    }
+
     function addClientRow(client) {
       const row = document.createElement('tr');
 
+      // Name + inline paid/reminder
       const nameTd = document.createElement('td');
-      nameTd.textContent = client.name;
+      const nameMain = document.createElement('div');
+      nameMain.classList.add('client-name-main');
+      nameMain.textContent = client.name;
 
-      const emailTd = document.createElement('td');
-      emailTd.textContent = client.email;
+      const inlineActions = document.createElement('div');
+      inlineActions.classList.add('inline-actions');
 
-      const macTd = document.createElement('td');
-      macTd.textContent = client.phone || '';
-
-      const amountTd = document.createElement('td');
-      amountTd.textContent = client.amount;
-
-      const dueTd = document.createElement('td');
-      dueTd.textContent = client.dueDate;
-
-      const wifiTd = document.createElement('td');
-      wifiTd.textContent = client.wifi;
-
-      const statusTd = document.createElement('td');
-      statusTd.appendChild(createStatusPill(client.status || 'pending'));
-
-      const paidTd = document.createElement('td');
+      const paidLabel = document.createElement('label');
+      paidLabel.classList.add('inline-paid-label');
       const paidCheckbox = document.createElement('input');
       paidCheckbox.type = 'checkbox';
       paidCheckbox.classList.add('paid-checkbox');
       paidCheckbox.checked = client.status === 'paid';
+      paidLabel.appendChild(paidCheckbox);
+      paidLabel.appendChild(document.createTextNode('Paid'));
+
+      const sendBtn = document.createElement('button');
+      sendBtn.classList.add('inline-send-btn');
+      if (client.status === 'paid') {
+        sendBtn.textContent = 'Send Receipt';
+        sendBtn.classList.add('receipt-btn');
+        sendBtn.addEventListener('click', () => sendEmail(client, 'receipt', sendBtn));
+      } else {
+        sendBtn.textContent = 'Send Reminder';
+        sendBtn.classList.add('reminder-btn');
+        sendBtn.addEventListener('click', () => sendEmail(client, 'reminder', sendBtn));
+      }
+
       paidCheckbox.addEventListener('change', async () => {
         const newStatus = paidCheckbox.checked ? 'paid' : 'pending';
         const ok = await updateStatus(client, newStatus);
@@ -413,41 +1071,45 @@ Thank you.
           renderClients();
         }
       });
-      paidTd.appendChild(paidCheckbox);
 
+      inlineActions.appendChild(paidLabel);
+      inlineActions.appendChild(sendBtn);
+
+      nameTd.appendChild(nameMain);
+      nameTd.appendChild(inlineActions);
+
+      // MAC
+      const macTd = document.createElement('td');
+      macTd.textContent = client.phone || '';
+
+      // Status
+      const statusTd = document.createElement('td');
+      statusTd.appendChild(createStatusPill(client.status || 'pending'));
+
+      // Amount
+      const amountTd = document.createElement('td');
+      amountTd.textContent = client.amount;
+
+      // Actions (Edit / Delete only)
       const actionsTd = document.createElement('td');
 
-      const mainActionBtn = document.createElement('button');
-      mainActionBtn.classList.add('action-btn');
-
-      if (client.status === 'paid') {
-        mainActionBtn.textContent = 'Send Receipt';
-        mainActionBtn.addEventListener('click', () =>
-          sendEmail(client, 'receipt', mainActionBtn)
-        );
-      } else {
-        mainActionBtn.textContent = 'Send Reminder';
-        mainActionBtn.addEventListener('click', () =>
-          sendEmail(client, 'reminder', mainActionBtn)
-        );
-      }
+      const editBtn = document.createElement('button');
+      editBtn.classList.add('edit-btn');
+      editBtn.textContent = 'Edit';
+      editBtn.addEventListener('click', () => openEditModal(client));
 
       const deleteBtn = document.createElement('button');
       deleteBtn.classList.add('delete-btn');
       deleteBtn.textContent = 'Delete';
       deleteBtn.addEventListener('click', () => deleteClient(client));
 
-      actionsTd.appendChild(mainActionBtn);
+      actionsTd.appendChild(editBtn);
       actionsTd.appendChild(deleteBtn);
 
       row.appendChild(nameTd);
-      row.appendChild(emailTd);
       row.appendChild(macTd);
-      row.appendChild(amountTd);
-      row.appendChild(dueTd);
-      row.appendChild(wifiTd);
       row.appendChild(statusTd);
-      row.appendChild(paidTd);
+      row.appendChild(amountTd);
       row.appendChild(actionsTd);
 
       tableBody.appendChild(row);
@@ -509,12 +1171,105 @@ Thank you.
     function renderClients() {
       tableBody.innerHTML = '';
       disconnectBody.innerHTML = '';
+      devicesBody.innerHTML = '';
+      emailsBody.innerHTML = '';
+
+      let totalAmount = 0;
+      let collectedAmount = 0;
+
+      const wifiLabels = ['WiFi 1', 'WiFi 2', 'WiFi 3', 'WiFi 4', 'Extension'];
+      const wifiStats = {};
+      wifiLabels.forEach(label => {
+        wifiStats[label] = { total: 0, collected: 0, count: 0 };
+      });
+
+      clients.forEach(client => {
+        const amt = parseAmount(client.amount);
+        totalAmount += amt;
+        if (client.status === 'paid') {
+          collectedAmount += amt;
+        }
+
+        const wifi = client.wifi || 'Unknown';
+        if (!wifiStats[wifi]) {
+          wifiStats[wifi] = { total: 0, collected: 0, count: 0 };
+        }
+        wifiStats[wifi].total += amt;
+        wifiStats[wifi].count += 1;
+        if (client.status === 'paid') {
+          wifiStats[wifi].collected += amt;
+        }
+      });
+
+      const remainingAmount = totalAmount - collectedAmount;
+
+      const totalAmountEl = document.getElementById('totalAmount');
+      const collectedAmountEl = document.getElementById('collectedAmount');
+      const remainingAmountEl = document.getElementById('remainingAmount');
+
+      if (totalAmountEl) totalAmountEl.textContent = formatAmount(totalAmount);
+      if (collectedAmountEl) collectedAmountEl.textContent = formatAmount(collectedAmount);
+      if (remainingAmountEl) remainingAmountEl.textContent = formatAmount(remainingAmount);
+
+      const wifiSummaryBody = document.getElementById('wifiSummaryBody');
+      if (wifiSummaryBody) {
+        wifiSummaryBody.innerHTML = '';
+        Object.keys(wifiStats).forEach(label => {
+          const stats = wifiStats[label];
+          if (stats.count === 0) return;
+
+          const row = document.createElement('tr');
+
+          const wifiTd = document.createElement('td');
+          wifiTd.textContent = label;
+
+          const countTd = document.createElement('td');
+          countTd.textContent = stats.count;
+
+          const totalTd = document.createElement('td');
+          totalTd.textContent = formatAmount(stats.total);
+
+          const collectedTd = document.createElement('td');
+          collectedTd.textContent = formatAmount(stats.collected);
+
+          const remainingTd = document.createElement('td');
+          remainingTd.textContent = formatAmount(stats.total - stats.collected);
+
+          row.appendChild(wifiTd);
+          row.appendChild(countTd);
+          row.appendChild(totalTd);
+          row.appendChild(collectedTd);
+          row.appendChild(remainingTd);
+
+          wifiSummaryBody.appendChild(row);
+        });
+      }
 
       clients.forEach(client => {
         addClientRow(client);
         if (isOverdue(client) && client.status !== 'disconnected') {
           addDisconnectRow(client);
         }
+
+        // Devices table
+        const dRow = document.createElement('tr');
+        dRow.innerHTML = `
+          <td>${client.name}</td>
+          <td>${client.phone || ''}</td>
+          <td>${client.wifi || ''}</td>
+          <td>${client.status || 'pending'}</td>
+        `;
+        devicesBody.appendChild(dRow);
+
+        // Emails table
+        const eRow = document.createElement('tr');
+        eRow.innerHTML = `
+          <td>${client.name}</td>
+          <td>${client.email}</td>
+          <td>${client.wifi || ''}</td>
+          <td>${client.status || 'pending'}</td>
+        `;
+        emailsBody.appendChild(eRow);
       });
     }
 
@@ -531,7 +1286,6 @@ Thank you.
       }
     }
 
-    // Apply global due date to all clients
     applyGlobalDueDateBtn.addEventListener('click', async () => {
       const dueDate = document.getElementById('globalDueDate').value;
       if (!dueDate) {
@@ -563,7 +1317,6 @@ Thank you.
       }
     });
 
-    // Add client
     addClientBtn.addEventListener('click', async function () {
       const name = document.getElementById('clientName').value.trim();
       const email = document.getElementById('clientEmail').value.trim();
@@ -606,7 +1359,16 @@ Thank you.
       document.getElementById('clientWifi').value = '';
     });
 
-    window.addEventListener('load', loadClients);
+    cancelEditBtn.addEventListener('click', closeEditModal);
+    editBackdrop.addEventListener('click', (e) => {
+      if (e.target === editBackdrop) closeEditModal();
+    });
+    saveEditBtn.addEventListener('click', saveEditChanges);
+
+    window.addEventListener('load', () => {
+      setActiveSection('all');
+      loadClients();
+    });
   </script>
 </body>
 </html>

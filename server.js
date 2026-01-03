@@ -7,12 +7,12 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = 3000;
 
-// 👇 Read Gmail + App Password from environment (from .env)
+// 👇 Read Gmail + App Password from .env
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
 
 if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-  console.error('ERROR: GMAIL_USER or GMAIL_APP_PASSWORD is missing in environment variables.');
+  console.error('ERROR: GMAIL_USER or GMAIL_APP_PASSWORD is missing in .env');
 }
 
 // Nodemailer transporter using Gmail
@@ -103,6 +103,34 @@ app.post('/api/clients', (req, res) => {
   });
 });
 
+// ---- API: update client FULL data (Edit button) ----
+app.put('/api/clients/:id', (req, res) => {
+  const id = req.params.id;
+  const { name, email, phone, amount, dueDate, wifi } = req.body;
+
+  if (!name || !email || !amount || !dueDate || !wifi) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const sql = `
+    UPDATE clients
+    SET name = ?, email = ?, phone = ?, amount = ?, dueDate = ?, wifi = ?
+    WHERE id = ?
+  `;
+  const params = [name, email, phone || '', amount, dueDate, wifi, id];
+
+  db.run(sql, params, function (err) {
+    if (err) {
+      console.error('Error updating client:', err);
+      return res.status(500).json({ error: 'Failed to update client' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+    res.json({ success: true });
+  });
+});
+
 // ---- API: update client status (pending / paid / disconnected) ----
 app.post('/api/clients/:id/status', (req, res) => {
   const id = req.params.id;
@@ -162,29 +190,134 @@ app.post('/api/clients/update-due-dates', (req, res) => {
   });
 });
 
-// ---- HTML email template (Netflix-ish style) ----
+// ---- HTML email templates ----
 function buildHtmlEmail(client = {}, subject, message, type = 'reminder') {
   const name = client.name || 'Valued Customer';
   const amount = client.amount || '';
   const dueDate = client.dueDate || '';
   const wifi = client.wifi || '';
-  const mac = client.phone || ''; // we store Device MAC in "phone" field
+  const mac = client.phone || ''; // Device MAC stored in "phone"
 
+  // RECEIPT – narrow, text-style like a printed slip
+  if (type === 'receipt') {
+    const paymentDate = new Date();
+    const dateStr = paymentDate.toLocaleDateString('en-PH');
+    const timeStr = paymentDate.toLocaleTimeString('en-PH', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Payment Receipt</title>
+</head>
+<body style="margin:0;padding:0;background-color:#e5e7eb;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+    <tr>
+      <td align="center" style="padding:24px 0;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="360" style="background-color:#ffffff;border:1px solid #d1d5db;">
+          <tr>
+            <td style="padding:12px 8px;text-align:center;font-family:'Courier New',monospace;">
+              <div style="font-size:18px;font-weight:bold;">AIRFIBER INTERNET</div>
+              <div style="font-size:12px;">Official Receipt</div>
+              <div style="font-size:11px;margin-top:4px;">Thank you for your payment</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              DATE: ${dateStr}   TIME: ${timeStr}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              CUSTOMER: ${name}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              SERVICE : ${wifi || 'INTERNET SERVICE'}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              DUE DATE: ${dueDate || '-'}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 8px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              DEVICE MAC: ${mac || '-'}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 0 8px;font-family:'Courier New',monospace;font-size:11px;">
+              ----------------------------------------
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 8px;font-family:'Courier New',monospace;font-size:11px;">
+              DESCRIPTION                 AMOUNT
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 8px;font-family:'Courier New',monospace;font-size:11px;">
+              ----------------------------------------
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 8px 4px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              INTERNET SERVICE           ₱${amount || '-'}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 8px;font-family:'Courier New',monospace;font-size:11px;">
+              ----------------------------------------
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 8px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              TOTAL                      ₱${amount || '-'}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 12px 8px;font-family:'Courier New',monospace;font-size:11px;">
+              PAYMENT METHOD: CASH/GCASH
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 12px 8px;font-family:'Courier New',monospace;font-size:11px;text-align:center;">
+              *** NO SIGNATURE REQUIRED ***
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 12px 8px;font-family:'Courier New',monospace;font-size:10px;text-align:center;color:#6b7280;">
+              This email serves as your official receipt from AirFiber Internet Billing.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+  }
+
+  // Modern layout for REMINDER + DISCONNECTION
   let bannerText = '';
-  let bannerColor = '#0073e6'; // blue
+  let bannerColor = '#0073e6'; // default accent
   let titleText = subject || 'Billing Reminder';
 
-  if (type === 'receipt') {
-    bannerText = 'Payment received';
-    bannerColor = '#2bb24c';
-    titleText = 'Thank you for your payment';
-  } else if (type === 'disconnection') {
+  if (type === 'disconnection') {
     bannerText = 'Important account notice';
-    bannerColor = '#e50914'; // Netflix red style
+    bannerColor = '#b91c1c'; // deep red
     titleText = 'Your account is scheduled for disconnection';
   } else {
     bannerText = 'Your payment is due soon';
-    bannerColor = '#f79e1b';
+    bannerColor = '#f97316'; // orange accent
     titleText = 'Please review your billing details';
   }
 
@@ -195,46 +328,58 @@ function buildHtmlEmail(client = {}, subject, message, type = 'reminder') {
   <meta charset="utf-8" />
   <title>${titleText}</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">
+<body style="margin:0;padding:0;background-color:#0f172a;font-family:Arial,Helvetica,sans-serif;">
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
     <tr>
-      <td align="center" style="padding:0;margin:0;">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="background-color:#ffffff;">
+      <td align="center" style="padding:24px 0;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="background:linear-gradient(135deg,#020617,#111827);border-radius:12px;overflow:hidden;border:1px solid #1f2937;">
           <!-- Brand bar -->
           <tr>
-            <td style="padding:16px 24px;background-color:#e50914;color:#ffffff;font-size:24px;font-weight:bold;">
+            <td style="padding:16px 24px;background:linear-gradient(90deg,#e50914,#b91c1c);color:#ffffff;font-size:22px;font-weight:bold;">
               AirFiber Internet Billing
             </td>
           </tr>
 
           <!-- Status bar -->
           <tr>
-            <td style="background-color:${bannerColor};color:#ffffff;padding:10px 24px;font-size:14px;font-weight:bold;">
+            <td style="background-color:${bannerColor};color:#ffffff;padding:10px 24px;font-size:13px;font-weight:bold;">
               ${bannerText}
             </td>
           </tr>
 
           <!-- Main content -->
           <tr>
-            <td style="padding:24px;">
-              <h1 style="margin:0 0 12px 0;font-size:24px;color:#000000;">${titleText}</h1>
-              <p style="margin:0 0 12px 0;font-size:14px;color:#333333;">Hi ${name},</p>
-              <p style="margin:0 0 16px 0;font-size:14px;color:#333333;line-height:1.4;">
+            <td style="padding:24px;background-color:#020617;color:#e5e7eb;">
+              <h1 style="margin:0 0 12px 0;font-size:22px;color:#ffffff;">${titleText}</h1>
+              <p style="margin:0 0 8px 0;font-size:14px;">Hi ${name},</p>
+              <p style="margin:0 0 16px 0;font-size:13px;line-height:1.6;color:#d1d5db;">
                 ${message.replace(/\n/g, '<br />')}
               </p>
 
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border:1px solid #dddddd;border-radius:8px;margin:16px 0;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:separate;border-spacing:0;border-radius:10px;background-color:#020617;border:1px solid #1f2937;margin:16px 0;">
                 <tr>
-                  <td style="padding:12px 16px;font-size:13px;color:#555555;">
-                    <strong>WiFi:</strong> ${wifi || '-'}<br />
-                    <strong>Amount:</strong> ₱${amount || '-'}<br />
-                    <strong>Due date:</strong> ${dueDate || '-'}<br />
-                    <strong>Device MAC:</strong> ${mac || '-'}
+                  <td style="padding:12px 16px;font-size:13px;color:#9ca3af;border-bottom:1px solid #1f2937;">
+                    <span style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;">WiFi</span>
+                    <span style="font-size:13px;color:#e5e7eb;">${wifi || '-'}</span>
+                  </td>
+                  <td style="padding:12px 16px;font-size:13px;color:#9ca3af;border-bottom:1px solid #1f2937;">
+                    <span style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;">Amount</span>
+                    <span style="font-size:13px;color:#e5e7eb;">₱${amount || '-'}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 16px;font-size:13px;color:#9ca3af;">
+                    <span style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;">Due date</span>
+                    <span style="font-size:13px;color:#e5e7eb;">${dueDate || '-'}</span>
+                  </td>
+                  <td style="padding:12px 16px;font-size:13px;color:#9ca3af;">
+                    <span style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;">Device MAC</span>
+                    <span style="font-size:13px;color:#e5e7eb;">${mac || '-'}</span>
                   </td>
                 </tr>
               </table>
 
-              <p style="margin:16px 0 0 0;font-size:12px;color:#777777;line-height:1.4%;">
+              <p style="margin:16px 0 0 0;font-size:11px;color:#6b7280;line-height:1.5;">
                 This email was sent by your AirFiber Internet Billing system. If you believe you received this in error,
                 please contact your administrator.
               </p>
@@ -243,7 +388,7 @@ function buildHtmlEmail(client = {}, subject, message, type = 'reminder') {
 
           <!-- Footer -->
           <tr>
-            <td style="padding:16px 24px;font-size:11px;color:#999999;background-color:#f5f5f5;">
+            <td style="padding:12px 24px;font-size:11px;color:#6b7280;background-color:#020617;text-align:center;border-top:1px solid #1f2937;">
               © ${new Date().getFullYear()} AirFiber Internet Billing. All rights reserved.
             </td>
           </tr>
