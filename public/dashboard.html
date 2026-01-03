@@ -10,7 +10,6 @@
       --sidebar-bg: #020617;
       --border-subtle: #1f2937;
       --accent: #f97316;
-      --accent-soft: rgba(249,115,22,0.15);
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
       --danger: #dc2626;
@@ -22,7 +21,7 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background-color: var(--bg);
+      background: #020617;
       color: var(--text-main);
       height: 100vh;
       display: flex;
@@ -35,16 +34,22 @@
       overflow: hidden;
     }
 
-    /* SIDEBAR (desktop) */
+    /* -------- SIDEBAR (DESKTOP) -------- */
     .sidebar {
-      width: 240px;
-      background: radial-gradient(circle at top, #111827 0, #020617 40%, #020617 100%);
+      width: 230px;
+      background: var(--sidebar-bg);
       border-right: 1px solid var(--border-subtle);
-      padding: 12px 14px;
+      padding: 12px 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       flex-shrink: 0;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .brand {
@@ -64,18 +69,23 @@
       font-weight: 800;
       color: white;
       font-size: 16px;
-      box-shadow: 0 0 12px rgba(248,113,22,0.6);
+      box-shadow: 0 0 10px rgba(248,113,22,0.6);
     }
 
-    .brand-title { font-size: 15px; font-weight: 600; }
-    .brand-sub   { font-size: 11px; color: var(--text-muted); }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
 
-    .sidebar-section-title {
+    .nav-title {
       font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
       color: #6b7280;
-      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
 
     .nav-list {
@@ -92,50 +102,51 @@
       border-radius: 999px;
       font-size: 12px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      text-align: left;
       transition: background 0.15s, color 0.15s, transform 0.05s;
     }
 
-    .nav-btn span { flex: 1; }
-
     .nav-btn:hover {
-      background-color: rgba(31,41,55,0.8);
+      background: #111827;
       color: var(--text-main);
       transform: translateY(-1px);
     }
 
     .nav-btn.active {
-      background-image: linear-gradient(135deg, #f97316, #ea580c);
+      background: linear-gradient(135deg, #f97316, #ea580c);
       color: #111827;
       font-weight: 600;
     }
 
-    .nav-btn.logout {
+    .logout-btn {
       margin-top: auto;
-      background: rgba(127,29,29,0.25);
-      border: 1px solid rgba(248,113,22,0.4);
+      border: 1px solid rgba(248,113,22,0.5);
+      background: rgba(127,29,29,0.3);
       color: #fecaca;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
     }
 
-    .nav-btn.logout:hover {
-      background: rgba(127,29,29,0.4);
-      color: #fee2e2;
+    .logout-btn:hover {
+      background: rgba(185,28,28,0.6);
+      transform: translateY(-1px);
     }
 
-    /* MAIN AREA */
+    /* -------- MAIN -------- */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       background: radial-gradient(circle at top left, rgba(30,64,175,0.35), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(248,113,22,0.2), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(248,113,22,0.18), transparent 55%),
                   #020617;
     }
 
     .topbar {
-      padding: 10px 16px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
@@ -151,17 +162,18 @@
       font-size: 11px;
       padding: 4px 8px;
       border-radius: 999px;
-      background-color: rgba(22,163,74,0.15);
+      background: rgba(22,163,74,0.12);
       color: #bbf7d0;
-      border: 1px solid rgba(22,163,74,0.5);
+      border: 1px solid rgba(22,163,74,0.6);
     }
 
     .main-content {
       flex: 1;
-      padding: 12px 16px 14px;
+      padding: 12px 14px 14px;
       overflow-y: auto;
     }
 
+    /* -------- STATS -------- */
     .cards-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0,1fr));
@@ -170,21 +182,22 @@
     }
 
     .stat-card {
-      background-color: rgba(15,23,42,0.9);
-      border-radius: 12px;
+      background: rgba(15,23,42,0.95);
+      border-radius: 10px;
       padding: 8px 10px;
-      border: 1px solid rgba(148,163,184,0.25);
+      border: 1px solid rgba(148,163,184,0.3);
     }
 
     .stat-label { font-size: 11px; color: var(--text-muted); }
     .stat-value { font-size: 18px; font-weight: 600; margin-top: 2px; }
     .stat-sub   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
+    /* -------- CARDS -------- */
     .card {
-      background-color: rgba(15,23,42,0.95);
-      border-radius: 12px;
+      background: rgba(15,23,42,0.97);
+      border-radius: 10px;
       padding: 10px 10px 12px;
-      border: 1px solid rgba(148,163,184,0.25);
+      border: 1px solid rgba(148,163,184,0.3);
       margin-bottom: 12px;
     }
 
@@ -198,9 +211,10 @@
     .card-title { font-size: 14px; font-weight: 500; }
     .card-sub   { font-size: 11px; color: var(--text-muted); }
 
+    /* -------- FORM -------- */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(3,minmax(0,1fr));
+      grid-template-columns: repeat(3, minmax(0,1fr));
       gap: 8px;
       margin-top: 4px;
     }
@@ -222,7 +236,7 @@
       border: 1px solid var(--border-subtle);
       padding: 6px 8px;
       font-size: 12px;
-      background-color: rgba(15,23,42,0.9);
+      background: rgba(15,23,42,0.95);
       color: var(--text-main);
       outline: none;
     }
@@ -230,9 +244,10 @@
     .form-field input:focus,
     .form-field select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(249,115,22,0.4);
+      box-shadow: 0 0 0 1px rgba(249,115,22,0.45);
     }
 
+    /* -------- BUTTONS -------- */
     .btn {
       border-radius: 999px;
       border: none;
@@ -243,32 +258,33 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      transition: transform 0.08s, box-shadow 0.12s, filter 0.12s, background 0.12s;
       white-space: nowrap;
+      transition: transform 0.08s, box-shadow 0.12s, filter 0.12s, background 0.12s;
     }
 
     .btn-primary {
-      background-image: linear-gradient(135deg, #facc15, #f97316);
+      background: linear-gradient(135deg, #facc15, #f97316);
       color: #111827;
       box-shadow: 0 6px 12px rgba(0,0,0,0.4);
     }
+
     .btn-primary:hover {
       filter: brightness(1.05);
       transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
     }
 
     .btn-soft {
-      background-color: rgba(15,23,42,0.9);
+      background: rgba(15,23,42,0.95);
       border: 1px solid rgba(148,163,184,0.4);
       color: var(--text-main);
     }
 
-    .btn-success { background-color: rgba(22,163,74,0.95); color: #ecfdf5; }
-    .btn-danger  { background-color: rgba(185,28,28,0.95); color: #fee2e2; }
-    .btn-ghost   { background-color: transparent; border: 1px solid rgba(55,65,81,0.9); color: var(--text-muted); }
+    .btn-success { background: rgba(22,163,74,0.95); color: #ecfdf5; }
+    .btn-danger  { background: rgba(185,28,28,0.95); color: #fee2e2; }
+    .btn-ghost   { background: transparent; border: 1px solid rgba(55,65,81,0.9); color: var(--text-muted); }
 
-    .btn-small { padding: 4px 8px; font-size: 11px; }
+    .btn-small { padding: 3px 8px; font-size: 11px; }
 
     .table-wrap { overflow-x: auto; margin-top: 6px; }
 
@@ -287,7 +303,7 @@
 
     th { font-weight: 500; color: var(--text-muted); }
 
-    tr:hover td { background-color: rgba(15,23,42,0.9); }
+    tr:hover td { background: rgba(15,23,42,0.96); }
 
     .tag {
       border-radius: 999px;
@@ -296,11 +312,7 @@
       border: 1px solid rgba(55,65,81,0.9);
       color: var(--text-muted);
     }
-
-    .tag-wifi {
-      border-color: rgba(59,130,246,0.8);
-      color: #bfdbfe;
-    }
+    .tag-wifi { border-color: rgba(59,130,246,0.8); color: #bfdbfe; }
 
     .status-pill {
       border-radius: 999px;
@@ -308,13 +320,10 @@
       font-size: 10px;
       font-weight: 500;
     }
-    .status-paid        { background: rgba(22,163,74,0.2);  color:#bbf7d0; border:1px solid rgba(22,163,74,0.7); }
-    .status-pending     { background: rgba(245,158,11,0.2); color:#fed7aa; border:1px solid rgba(245,158,11,0.7); }
-    .status-disconnect  { background: rgba(185,28,28,0.2);  color:#fecaca; border:1px solid rgba(185,28,28,0.7); }
+    .status-paid       { background: rgba(22,163,74,0.2);  color:#bbf7d0; border:1px solid rgba(22,163,74,0.7); }
+    .status-pending    { background: rgba(245,158,11,0.2); color:#fed7aa; border:1px solid rgba(245,158,11,0.7); }
+    .status-disconnect { background: rgba(185,28,28,0.2);  color:#fecaca; border:1px solid rgba(185,28,28,0.7); }
 
-    .stack-vertical { display:flex; flex-direction:column; gap:4px; }
-
-    /* Actions container – same on mobile & desktop */
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -324,18 +333,19 @@
     .hide-mobile { }
     .mobile-only { display:none; }
 
-    /* TABLET */
+    /* -------- TABLET -------- */
     @media (max-width: 900px) {
       .sidebar {
         width: 80px;
         padding: 10px 8px;
       }
       .brand-title,
-      .brand-sub { display:none; }
+      .brand-sub,
+      .nav-title { display:none; }
       .cards-row { grid-template-columns: 1fr; }
     }
 
-    /* MOBILE (PORTRAIT) */
+    /* -------- MOBILE (PORTRAIT) -------- */
     @media (max-width: 720px) {
       body {
         flex-direction: column;
@@ -347,9 +357,9 @@
       }
 
       .sidebar {
+        width: 100%;
         flex-direction: row;
         align-items: center;
-        width: 100%;
         border-right: none;
         border-bottom: 1px solid var(--border-subtle);
         padding: 6px 8px;
@@ -357,33 +367,34 @@
         overflow-x: auto;
       }
 
-      .brand-title,
-      .brand-sub,
-      .sidebar-section-title { display:none; }
+      .sidebar-top {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
 
       .nav-list {
         flex-direction: row;
         gap: 4px;
-        flex-wrap: nowrap;
       }
 
       .nav-btn {
         width: auto;
-        padding: 5px 10px;
+        padding: 5px 8px;
         font-size: 11px;
         flex-shrink: 0;
       }
 
-      .nav-btn.logout {
+      .logout-btn {
         margin-top: 0;
         margin-left: auto;
-        padding: 5px 10px;
+        padding: 5px 8px;
         font-size: 11px;
         flex-shrink: 0;
       }
 
       .main {
-        min-height: calc(100vh - 48px);
+        min-height: calc(100vh - 46px);
       }
 
       .hide-mobile { display:none; }
@@ -394,16 +405,14 @@
         font-size: 10px;
       }
 
-      .actions {
-        gap: 3px;
-      }
+      .actions { gap: 3px; }
     }
   </style>
 </head>
 <body>
 <div class="app-shell">
   <aside class="sidebar">
-    <div>
+    <div class="sidebar-top">
       <div class="brand">
         <div class="brand-logo">A</div>
         <div>
@@ -411,16 +420,17 @@
           <div class="brand-sub">Admin dashboard</div>
         </div>
       </div>
-      <div class="sidebar-section-title">Navigation</div>
+      <div class="nav-title">Navigation</div>
       <div class="nav-list">
-        <button class="nav-btn active" data-tab="all-clients"><span>All Clients</span></button>
-        <button class="nav-btn" data-tab="devices"><span>Devices</span></button>
-        <button class="nav-btn" data-tab="emails"><span>Email Addresses</span></button>
-        <button class="nav-btn" data-tab="money"><span>Money Collection</span></button>
-        <button class="nav-btn" data-tab="portal"><span>Portal</span></button>
+        <button class="nav-btn active" data-tab="all-clients">All Clients</button>
+        <button class="nav-btn" data-tab="devices">Devices</button>
+        <button class="nav-btn" data-tab="emails">Email Addresses</button>
+        <button class="nav-btn" data-tab="money">Money Collection</button>
+        <button class="nav-btn" data-tab="portal">Portal</button>
       </div>
     </div>
-    <button class="nav-btn logout" id="logoutBtn"><span>Logout</span></button>
+
+    <button class="logout-btn" id="logoutBtn">Logout</button>
   </aside>
 
   <main class="main">
@@ -494,6 +504,7 @@
             </select>
           </div>
         </div>
+
         <div style="margin-top:8px; display:flex; justify-content:flex-end;">
           <button class="btn btn-primary" id="addClientBtn">Add Client</button>
         </div>
@@ -572,47 +583,51 @@
           </div>
         </div>
 
-        <div class="stack-vertical">
+        <div style="display:flex; flex-direction:column; gap:8px;">
           <div>
             <div class="card-sub" style="margin-bottom:4px;">Global Due Date (for all clients)</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <input type="date" id="globalDueDate" style="border-radius:9px;border:1px solid var(--border-subtle);padding:6px 8px;background:rgba(15,23,42,0.9);color:var(--text-main);font-size:12px;outline:none;" />
+              <input type="date" id="globalDueDate" style="border-radius:8px;border:1px solid var(--border-subtle);padding:6px 8px;background:rgba(15,23,42,0.95);color:var(--text-main);font-size:12px;outline:none;" />
               <button class="btn btn-soft btn-small" id="updateAllDueBtn">Update all due dates</button>
             </div>
           </div>
 
-          <div class="card-sub" style="margin-top:10px;">Unpaid / Pending</div>
-          <div class="table-wrap">
-            <table id="pendingTable">
-              <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Amount</th>
-                <th>Due</th>
-                <th>WiFi</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">Unpaid / Pending</div>
+            <div class="table-wrap">
+              <table id="pendingTable">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Amount</th>
+                  <th>Due</th>
+                  <th>WiFi</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="card-sub" style="margin-top:10px;">For Disconnection</div>
-          <div class="table-wrap">
-            <table id="disconnectionTable">
-              <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Amount</th>
-                <th>Due</th>
-                <th>WiFi</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">For Disconnection</div>
+            <div class="table-wrap">
+              <table id="disconnectionTable">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Amount</th>
+                  <th>Due</th>
+                  <th>WiFi</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -628,8 +643,8 @@
           </div>
         </div>
         <p class="card-sub" style="margin-top:4px;">
-          For now, continue using the router interfaces directly. When your IPs are fixed, we can add buttons like
-          “Main Router”, “WiFi 2”, etc. here.
+          For now, continue using the router interfaces directly. When your IPs are fixed,
+          we can add buttons here like “Main Router”, “WiFi 2”, etc.
         </p>
       </div>
     </section>
@@ -642,13 +657,10 @@
     window.location.href = '/';
   }
 
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('af_isLoggedIn');
-      window.location.href = '/';
-    });
-  }
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('af_isLoggedIn');
+    window.location.href = '/';
+  });
 
   // TABS
   const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
