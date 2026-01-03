@@ -118,6 +118,26 @@
       font-weight: 600;
     }
 
+    .logout-btn {
+      margin-top: auto;
+      border: 1px solid rgba(248,113,22,0.5);
+      background: rgba(127,29,29,0.6);
+      color: #fecaca;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s, box-shadow 0.12s;
+      align-self: flex-start;
+      white-space: nowrap;
+    }
+
+    .logout-btn:hover {
+      background: rgba(185,28,28,0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
     /* -------- MAIN -------- */
     .main {
       flex: 1;
@@ -148,6 +168,7 @@
       background: rgba(22,163,74,0.12);
       color: #bbf7d0;
       border: 1px solid rgba(22,163,74,0.6);
+      white-space: nowrap;
     }
 
     .main-content {
@@ -189,6 +210,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
+      gap: 8px;
     }
 
     .card-title { font-size: 14px; font-weight: 500; }
@@ -319,7 +341,7 @@
     /* -------- TABLET -------- */
     @media (max-width: 900px) {
       .sidebar {
-        width: 80px;
+        width: 90px;
         padding: 10px 8px;
       }
       .brand-title,
@@ -383,6 +405,15 @@
         flex-shrink: 0;
       }
 
+      /* Logout: small pill under nav, right side, NOT huge */
+      .logout-btn {
+        margin-top: 2px;
+        margin-left: auto;
+        padding: 4px 10px;
+        font-size: 11px;
+        align-self: flex-end;
+      }
+
       .main {
         min-height: calc(100vh - 60px);
       }
@@ -419,6 +450,8 @@
         <button class="nav-btn" data-tab="portal">Portal</button>
       </div>
     </div>
+
+    <button class="logout-btn" id="logoutBtn">Logout</button>
   </aside>
 
   <main class="main">
@@ -640,11 +673,16 @@
 </div>
 
 <script>
-  // (Optional) Keep login protection; if you don't want it, you can remove this block:
+  // LOGIN PROTECTION (same as before)
   if (localStorage.getItem('af_isLoggedIn') !== 'true') {
-    // window.location.href = '/';
-    // If you want to disable login requirement, comment the line above.
+    window.location.href = '/';
   }
+
+  // LOGOUT
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('af_isLoggedIn');
+    window.location.href = '/';
+  });
 
   // TABS
   const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
