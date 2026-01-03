@@ -118,23 +118,6 @@
       font-weight: 600;
     }
 
-    .logout-btn {
-      margin-top: auto;
-      border: 1px solid rgba(248,113,22,0.5);
-      background: rgba(127,29,29,0.3);
-      color: #fecaca;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.05s;
-    }
-
-    .logout-btn:hover {
-      background: rgba(185,28,28,0.6);
-      transform: translateY(-1px);
-    }
-
     /* -------- MAIN -------- */
     .main {
       flex: 1;
@@ -400,15 +383,6 @@
         flex-shrink: 0;
       }
 
-      /* Logout sits on its own line, right side */
-      .logout-btn {
-        margin-top: 2px;
-        margin-left: auto;
-        padding: 4px 10px;
-        font-size: 11px;
-        flex-shrink: 0;
-      }
-
       .main {
         min-height: calc(100vh - 60px);
       }
@@ -445,8 +419,6 @@
         <button class="nav-btn" data-tab="portal">Portal</button>
       </div>
     </div>
-
-    <button class="logout-btn" id="logoutBtn">Logout</button>
   </aside>
 
   <main class="main">
@@ -668,15 +640,11 @@
 </div>
 
 <script>
-  // LOGIN PROTECTION
+  // (Optional) Keep login protection; if you don't want it, you can remove this block:
   if (localStorage.getItem('af_isLoggedIn') !== 'true') {
-    window.location.href = '/';
+    // window.location.href = '/';
+    // If you want to disable login requirement, comment the line above.
   }
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('af_isLoggedIn');
-    window.location.href = '/';
-  });
 
   // TABS
   const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
