@@ -7,21 +7,17 @@
   <style>
     :root {
       --bg: #020617;
-      --bg-elevated: #020617;
       --sidebar-bg: #020617;
       --border-subtle: #1f2937;
       --accent: #f97316;
       --accent-soft: rgba(249,115,22,0.15);
-      --accent-strong: #ea580c;
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
       --danger: #dc2626;
       --success: #22c55e;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -39,27 +35,28 @@
       overflow: hidden;
     }
 
+    /* SIDEBAR (desktop) */
     .sidebar {
       width: 240px;
       background: radial-gradient(circle at top, #111827 0, #020617 40%, #020617 100%);
       border-right: 1px solid var(--border-subtle);
-      padding: 16px 14px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
+      flex-shrink: 0;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 4px;
     }
 
     .brand-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
       background: radial-gradient(circle at 30% 0%, #f97316, #b91c1c);
       display: flex;
       align-items: center;
@@ -67,24 +64,18 @@
       font-weight: 800;
       color: white;
       font-size: 16px;
-      box-shadow: 0 0 15px rgba(248,113,22,0.7);
+      box-shadow: 0 0 12px rgba(248,113,22,0.6);
     }
 
-    .brand-title {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .brand-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+    .brand-title { font-size: 15px; font-weight: 600; }
+    .brand-sub   { font-size: 11px; color: var(--text-muted); }
 
     .sidebar-section-title {
-      font-size: 11px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
       color: #6b7280;
-      margin: 8px 0 4px;
+      margin-top: 6px;
     }
 
     .nav-list {
@@ -94,58 +85,46 @@
     }
 
     .nav-btn {
-      width: 100%;
-      text-align: left;
       border: none;
       background: transparent;
       color: var(--text-muted);
-      padding: 8px 10px;
+      padding: 7px 10px;
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 12px;
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.06s ease;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s, transform 0.05s;
     }
 
-    .nav-btn span {
-      flex: 1;
-    }
+    .nav-btn span { flex: 1; }
 
     .nav-btn:hover {
-      background-color: rgba(31,41,55,0.7);
+      background-color: rgba(31,41,55,0.8);
       color: var(--text-main);
       transform: translateY(-1px);
     }
 
     .nav-btn.active {
-      background: linear-gradient(135deg, #f97316, #ea580c);
+      background-image: linear-gradient(135deg, #f97316, #ea580c);
       color: #111827;
       font-weight: 600;
     }
 
-    .nav-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background-color: rgba(15,23,42,0.7);
-      color: var(--text-muted);
-    }
-
     .nav-btn.logout {
       margin-top: auto;
-      background: rgba(127,29,29,0.2);
-      border: 1px solid rgba(248,113,22,0.35);
+      background: rgba(127,29,29,0.25);
+      border: 1px solid rgba(248,113,22,0.4);
       color: #fecaca;
-      width: 100%;
     }
 
     .nav-btn.logout:hover {
-      background: rgba(127,29,29,0.35);
+      background: rgba(127,29,29,0.4);
       color: #fee2e2;
     }
 
+    /* MAIN AREA */
     .main {
       flex: 1;
       display: flex;
@@ -156,29 +135,17 @@
     }
 
     .topbar {
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
+      background: rgba(15,23,42,0.95);
       backdrop-filter: blur(10px);
-      background: linear-gradient(to right, rgba(15,23,42,0.9), rgba(15,23,42,0.7));
     }
 
-    .topbar-title {
-      font-size: 16px;
-      font-weight: 500;
-    }
-    .topbar-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .topbar-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+    .topbar-title { font-size: 15px; font-weight: 500; }
+    .topbar-sub   { font-size: 11px; color: var(--text-muted); }
 
     .pill-status {
       font-size: 11px;
@@ -191,7 +158,7 @@
 
     .main-content {
       flex: 1;
-      padding: 14px 18px 16px;
+      padding: 12px 16px 14px;
       overflow-y: auto;
     }
 
@@ -203,70 +170,39 @@
     }
 
     .stat-card {
-      background-color: rgba(15,23,42,0.88);
-      border-radius: 12px;
-      padding: 10px 12px;
-      border: 1px solid rgba(148,163,184,0.25);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .stat-value {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .stat-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .card {
       background-color: rgba(15,23,42,0.9);
       border-radius: 12px;
-      padding: 12px 12px 14px;
-      border: 1px solid rgba(148,163,184,0.23);
-      box-shadow: 0 16px 30px rgba(0,0,0,0.4);
+      padding: 8px 10px;
+      border: 1px solid rgba(148,163,184,0.25);
+    }
+
+    .stat-label { font-size: 11px; color: var(--text-muted); }
+    .stat-value { font-size: 18px; font-weight: 600; margin-top: 2px; }
+    .stat-sub   { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .card {
+      background-color: rgba(15,23,42,0.95);
+      border-radius: 12px;
+      padding: 10px 10px 12px;
+      border: 1px solid rgba(148,163,184,0.25);
       margin-bottom: 12px;
     }
 
     .card-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 8px;
     }
 
-    .card-title {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .card-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background-color: rgba(15,23,42,0.7);
-      color: var(--text-muted);
-      border: 1px solid rgba(55,65,81,0.9);
-    }
+    .card-title { font-size: 14px; font-weight: 500; }
+    .card-sub   { font-size: 11px; color: var(--text-muted); }
 
     .form-grid {
       display: grid;
       grid-template-columns: repeat(3,minmax(0,1fr));
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .form-field {
@@ -282,21 +218,19 @@
 
     .form-field input,
     .form-field select {
-      border-radius: 9px;
+      border-radius: 8px;
       border: 1px solid var(--border-subtle);
       padding: 6px 8px;
       font-size: 12px;
-      background-color: rgba(15,23,42,0.85);
+      background-color: rgba(15,23,42,0.9);
       color: var(--text-main);
       outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
     .form-field input:focus,
     .form-field select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(249,115,22,0.5);
-      background-color: rgba(15,23,42,0.96);
+      box-shadow: 0 0 0 1px rgba(249,115,22,0.4);
     }
 
     .btn {
@@ -309,75 +243,34 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      transition: transform 0.08s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out, background 0.12s ease;
+      transition: transform 0.08s, box-shadow 0.12s, filter 0.12s, background 0.12s;
       white-space: nowrap;
     }
 
     .btn-primary {
       background-image: linear-gradient(135deg, #facc15, #f97316);
       color: #111827;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
     }
-
     .btn-primary:hover {
       filter: brightness(1.05);
-      box-shadow: 0 9px 20px rgba(0,0,0,0.5);
       transform: translateY(-1px);
-    }
-
-    .btn-primary:active {
-      transform: scale(0.97);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
-
-    .btn-ghost {
-      background-color: transparent;
-      color: var(--text-muted);
-      border: 1px solid rgba(55,65,81,0.8);
-    }
-
-    .btn-ghost:hover {
-      background-color: rgba(15,23,42,0.9);
-      color: var(--text-main);
-    }
-
-    .btn-small {
-      padding: 4px 8px;
-      font-size: 11px;
-    }
-
-    .btn-danger {
-      background-color: rgba(185,28,28,0.9);
-      color: #fee2e2;
-    }
-
-    .btn-danger:hover {
-      background-color: rgba(220,38,38,0.95);
-    }
-
-    .btn-success {
-      background-color: rgba(22,163,74,0.95);
-      color: #ecfdf5;
-    }
-
-    .btn-success:hover {
-      background-color: rgba(22,163,74,1);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
     }
 
     .btn-soft {
-      background-color: rgba(15,23,42,0.85);
-      border: 1px solid rgba(148,163,184,0.35);
+      background-color: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
       color: var(--text-main);
     }
 
-    .btn-soft:hover {
-      background-color: rgba(30,64,175,0.6);
-    }
+    .btn-success { background-color: rgba(22,163,74,0.95); color: #ecfdf5; }
+    .btn-danger  { background-color: rgba(185,28,28,0.95); color: #fee2e2; }
+    .btn-ghost   { background-color: transparent; border: 1px solid rgba(55,65,81,0.9); color: var(--text-muted); }
 
-    .table-wrap {
-      overflow-x: auto;
-      margin-top: 6px;
-    }
+    .btn-small { padding: 4px 8px; font-size: 11px; }
+
+    .table-wrap { overflow-x: auto; margin-top: 6px; }
 
     table {
       width: 100%;
@@ -392,15 +285,9 @@
       white-space: nowrap;
     }
 
-    th {
-      font-weight: 500;
-      color: var(--text-muted);
-      font-size: 11px;
-    }
+    th { font-weight: 500; color: var(--text-muted); }
 
-    tr:hover td {
-      background-color: rgba(15,23,42,0.85);
-    }
+    tr:hover td { background-color: rgba(15,23,42,0.9); }
 
     .tag {
       border-radius: 999px;
@@ -411,7 +298,7 @@
     }
 
     .tag-wifi {
-      border-color: rgba(59,130,246,0.7);
+      border-color: rgba(59,130,246,0.8);
       color: #bfdbfe;
     }
 
@@ -421,57 +308,34 @@
       font-size: 10px;
       font-weight: 500;
     }
+    .status-paid        { background: rgba(22,163,74,0.2);  color:#bbf7d0; border:1px solid rgba(22,163,74,0.7); }
+    .status-pending     { background: rgba(245,158,11,0.2); color:#fed7aa; border:1px solid rgba(245,158,11,0.7); }
+    .status-disconnect  { background: rgba(185,28,28,0.2);  color:#fecaca; border:1px solid rgba(185,28,28,0.7); }
 
-    .status-paid {
-      background-color: rgba(22,163,74,0.2);
-      color: #bbf7d0;
-      border: 1px solid rgba(22,163,74,0.7);
-    }
+    .stack-vertical { display:flex; flex-direction:column; gap:4px; }
 
-    .status-pending {
-      background-color: rgba(245,158,11,0.18);
-      color: #fed7aa;
-      border: 1px solid rgba(245,158,11,0.7);
-    }
-
-    .status-disconnect {
-      background-color: rgba(185,28,28,0.22);
-      color: #fecaca;
-      border: 1px solid rgba(185,28,28,0.7);
-    }
-
-    .stack-vertical {
+    /* Actions container – same on mobile & desktop */
+    .actions {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 4px;
     }
 
-    .mobile-only {
-      display: none;
-    }
+    .hide-mobile { }
+    .mobile-only { display:none; }
 
-    /* ---------- TABLET ---------- */
+    /* TABLET */
     @media (max-width: 900px) {
       .sidebar {
-        width: 72px;
+        width: 80px;
         padding: 10px 8px;
       }
       .brand-title,
-      .brand-sub {
-        display: none;
-      }
-      .nav-btn span {
-        font-size: 11px;
-      }
-      .nav-badge {
-        display: none;
-      }
-      .cards-row {
-        grid-template-columns: 1fr;
-      }
+      .brand-sub { display:none; }
+      .cards-row { grid-template-columns: 1fr; }
     }
 
-    /* ---------- MOBILE (PORTRAIT) ---------- */
+    /* MOBILE (PORTRAIT) */
     @media (max-width: 720px) {
       body {
         flex-direction: column;
@@ -488,34 +352,24 @@
         width: 100%;
         border-right: none;
         border-bottom: 1px solid var(--border-subtle);
-        padding: 8px 10px;
+        padding: 6px 8px;
         gap: 8px;
         overflow-x: auto;
       }
 
-      .brand {
-        margin-bottom: 0;
-        margin-right: 4px;
-      }
-
       .brand-title,
-      .brand-sub {
-        display: none;
-      }
-
-      .sidebar-section-title {
-        display: none;
-      }
+      .brand-sub,
+      .sidebar-section-title { display:none; }
 
       .nav-list {
         flex-direction: row;
-        flex-wrap: nowrap;
         gap: 4px;
+        flex-wrap: nowrap;
       }
 
       .nav-btn {
         width: auto;
-        padding: 6px 10px;
+        padding: 5px 10px;
         font-size: 11px;
         flex-shrink: 0;
       }
@@ -523,24 +377,25 @@
       .nav-btn.logout {
         margin-top: 0;
         margin-left: auto;
-        width: auto;
-        padding: 6px 10px;
+        padding: 5px 10px;
         font-size: 11px;
+        flex-shrink: 0;
       }
 
       .main {
-        height: auto;
-        min-height: calc(100vh - 56px);
+        min-height: calc(100vh - 48px);
       }
 
-      .table-wrap {
-        font-size: 11px;
+      .hide-mobile { display:none; }
+      .mobile-only { display:inline-block; }
+
+      .btn-small {
+        padding: 3px 6px;
+        font-size: 10px;
       }
-      .hide-mobile {
-        display: none;
-      }
-      .mobile-only {
-        display: inline-block;
+
+      .actions {
+        gap: 3px;
       }
     }
   </style>
@@ -565,10 +420,7 @@
         <button class="nav-btn" data-tab="portal"><span>Portal</span></button>
       </div>
     </div>
-
-    <button class="nav-btn logout" id="logoutBtn">
-      <span>Logout</span>
-    </button>
+    <button class="nav-btn logout" id="logoutBtn"><span>Logout</span></button>
   </aside>
 
   <main class="main">
@@ -577,13 +429,11 @@
         <div class="topbar-title">Billing Dashboard</div>
         <div class="topbar-sub">Manage AirFiber Internet billing, reminders, and collections</div>
       </div>
-      <div class="topbar-right">
-        <div class="pill-status">Online • Render</div>
-      </div>
+      <div class="pill-status">Online • Render</div>
     </header>
 
     <section class="main-content">
-      <!-- Stat cards -->
+      <!-- STATS -->
       <div class="cards-row">
         <div class="stat-card">
           <div class="stat-label">Total Amount to Collect</div>
@@ -609,12 +459,9 @@
             <div class="card-title">All Clients</div>
             <div class="card-sub">Add, edit, and manage all registered clients</div>
           </div>
-          <div>
-            <button class="btn btn-soft btn-small" id="refreshBtn">Refresh</button>
-          </div>
+          <button class="btn btn-soft btn-small" id="refreshBtn">Refresh</button>
         </div>
 
-        <!-- Add client form -->
         <div class="form-grid">
           <div class="form-field">
             <label for="clientName">Name</label>
@@ -651,7 +498,6 @@
           <button class="btn btn-primary" id="addClientBtn">Add Client</button>
         </div>
 
-        <!-- Clients table -->
         <div class="table-wrap">
           <table id="clientsTable">
             <thead>
@@ -666,9 +512,7 @@
               <th>Actions</th>
             </tr>
             </thead>
-            <tbody>
-            <!-- rows injected by JS -->
-            </tbody>
+            <tbody></tbody>
           </table>
         </div>
       </div>
@@ -678,7 +522,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Devices Overview</div>
-            <div class="card-sub">Quick view of devices / MAC addresses per WiFi group</div>
+            <div class="card-sub">Devices / MAC addresses per WiFi group</div>
           </div>
         </div>
         <div class="table-wrap">
@@ -696,7 +540,7 @@
         </div>
       </div>
 
-      <!-- EMAIL ADDRESSES TAB -->
+      <!-- EMAILS TAB -->
       <div class="card tab-panel" id="tab-emails" style="display:none;">
         <div class="card-header">
           <div>
@@ -719,20 +563,20 @@
         </div>
       </div>
 
-      <!-- MONEY COLLECTION TAB -->
+      <!-- MONEY TAB -->
       <div class="card tab-panel" id="tab-money" style="display:none;">
         <div class="card-header">
           <div>
             <div class="card-title">Money Collection</div>
-            <div class="card-sub">Track who has paid, who is pending, and who is for disconnection</div>
+            <div class="card-sub">Who has paid, who is pending, and who is for disconnection</div>
           </div>
         </div>
 
         <div class="stack-vertical">
           <div>
-            <div class="card-sub" style="margin-bottom:4px;">Global Due Date (applied to all clients)</div>
+            <div class="card-sub" style="margin-bottom:4px;">Global Due Date (for all clients)</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <input type="date" id="globalDueDate" style="border-radius:9px;border:1px solid var(--border-subtle);padding:6px 8px;background:rgba(15,23,42,0.85);color:var(--text-main);font-size:12px;outline:none;" />
+              <input type="date" id="globalDueDate" style="border-radius:9px;border:1px solid var(--border-subtle);padding:6px 8px;background:rgba(15,23,42,0.9);color:var(--text-main);font-size:12px;outline:none;" />
               <button class="btn btn-soft btn-small" id="updateAllDueBtn">Update all due dates</button>
             </div>
           </div>
@@ -779,36 +623,34 @@
           <div>
             <div class="card-title">Router Portal (Coming Soon)</div>
             <div class="card-sub">
-              This section will contain quick links to your 5 router admin pages.
-              Once all router IPs are fixed, we can turn this into shortcuts.
+              This will store quick links to your 5 router admin pages.
             </div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">
-          For now, please continue using your router's admin interface directly. When you're ready,
-          we can add buttons here like "Main Router", "2nd Floor", "3rd Floor", etc.
+        <p class="card-sub" style="margin-top:4px;">
+          For now, continue using the router interfaces directly. When your IPs are fixed, we can add buttons like
+          “Main Router”, “WiFi 2”, etc. here.
         </p>
       </div>
-
     </section>
   </main>
 </div>
 
 <script>
-  // ---------- LOGIN PROTECTION ----------
+  // LOGIN PROTECTION
   if (localStorage.getItem('af_isLoggedIn') !== 'true') {
     window.location.href = '/';
   }
 
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', function () {
+    logoutBtn.addEventListener('click', () => {
       localStorage.removeItem('af_isLoggedIn');
       window.location.href = '/';
     });
   }
 
-  // ---------- TABS ----------
+  // TABS
   const tabButtons = document.querySelectorAll('.nav-btn[data-tab]');
   const tabPanels = document.querySelectorAll('.tab-panel');
 
@@ -816,13 +658,13 @@
     btn.addEventListener('click', () => {
       const target = btn.getAttribute('data-tab');
       tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanels.forEach(panel => panel.style.display = 'none');
+      tabPanels.forEach(p => p.style.display = 'none');
       btn.classList.add('active');
       document.getElementById('tab-' + target).style.display = 'block';
     });
   });
 
-  // ---------- API HELPERS ----------
+  // API HELPERS
   async function apiGet(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error('Request failed');
@@ -842,18 +684,21 @@
     return res.json();
   }
 
-  // ---------- STATE ----------
+  // STATE
   let clients = [];
 
   function parseAmountStr(str) {
     if (!str) return 0;
     const clean = String(str).replace(/[^\d.]/g, '');
-    const val = parseFloat(clean);
-    return isNaN(val) ? 0 : val;
+    const v = parseFloat(clean);
+    return isNaN(v) ? 0 : v;
   }
 
   function formatPeso(num) {
-    return '₱' + Number(num).toLocaleString('en-PH', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    return '₱' + Number(num).toLocaleString('en-PH', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 0
+    });
   }
 
   function renderStats() {
@@ -865,7 +710,6 @@
       if (c.status === 'paid') collected += amt;
     });
     const remaining = total - collected;
-
     document.getElementById('statTotal').textContent = formatPeso(total);
     document.getElementById('statCollected').textContent = formatPeso(collected);
     document.getElementById('statRemaining').textContent = formatPeso(remaining);
@@ -883,15 +727,12 @@
 
     sorted.forEach(client => {
       const tr = document.createElement('tr');
-
-      const statusHtml = (() => {
-        if (client.status === 'paid') {
-          return '<span class="status-pill status-paid">Paid</span>';
-        } else if (client.status === 'for_disconnection') {
-          return '<span class="status-pill status-disconnect">For Disconnection</span>';
-        }
-        return '<span class="status-pill status-pending">Pending</span>';
-      })();
+      const statusHtml =
+        client.status === 'paid'
+          ? '<span class="status-pill status-paid">Paid</span>'
+          : client.status === 'for_disconnection'
+            ? '<span class="status-pill status-disconnect">For Disconnection</span>'
+            : '<span class="status-pill status-pending">Pending</span>';
 
       const mac = client.phone || '';
 
@@ -904,22 +745,15 @@
         <td>${formatPeso(parseAmountStr(client.amount))}</td>
         <td>${statusHtml}</td>
         <td>
-          <div class="stack-vertical">
-            <div>
-              <button class="btn btn-small btn-soft" data-action="edit" data-id="${client.id}">Edit</button>
-              <button class="btn btn-small btn-danger" data-action="delete" data-id="${client.id}">Delete</button>
-            </div>
-            <div>
-              <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${client.id}">
-                ${client.status === 'paid' ? 'Mark Pending' : 'Mark Paid'}
-              </button>
-              <button class="btn btn-small btn-soft mobile-only" data-action="reminder" data-id="${client.id}">Reminder</button>
-            </div>
-            <div class="hide-mobile">
-              <button class="btn btn-small btn-soft" data-action="reminder" data-id="${client.id}">Reminder</button>
-              <button class="btn btn-small btn-soft" data-action="receipt" data-id="${client.id}">Receipt</button>
-              <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${client.id}">Disconnection</button>
-            </div>
+          <div class="actions">
+            <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${client.id}">
+              ${client.status === 'paid' ? 'Mark Pending' : 'Mark Paid'}
+            </button>
+            <button class="btn btn-small btn-soft" data-action="reminder" data-id="${client.id}">Reminder</button>
+            <button class="btn btn-small btn-soft" data-action="receipt" data-id="${client.id}">Receipt</button>
+            <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${client.id}">Disconnect</button>
+            <button class="btn btn-small btn-soft" data-action="edit" data-id="${client.id}">Edit</button>
+            <button class="btn btn-small btn-ghost" data-action="delete" data-id="${client.id}">Delete</button>
           </div>
         </td>
       `;
@@ -930,7 +764,6 @@
   function renderDevicesTable() {
     const tbody = document.querySelector('#devicesTable tbody');
     tbody.innerHTML = '';
-
     clients
       .filter(c => c.phone && c.phone.trim() !== '')
       .forEach(c => {
@@ -967,7 +800,7 @@
     discBody.innerHTML = '';
 
     clients.forEach(c => {
-      const commonRow = `
+      const common = `
         <td>${c.name}</td>
         <td>${c.email}</td>
         <td>${formatPeso(parseAmountStr(c.amount))}</td>
@@ -977,21 +810,23 @@
 
       if (c.status === 'for_disconnection') {
         const tr = document.createElement('tr');
-        tr.innerHTML = commonRow + `
+        tr.innerHTML = common + `
           <td>
-            <button class="btn btn-small btn-soft" data-action="reminder" data-id="${c.id}">Resend Reminder</button>
-            <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${c.id}">Disconnection Notice</button>
-          </td>
-        `;
+            <div class="actions">
+              <button class="btn btn-small btn-soft" data-action="reminder" data-id="${c.id}">Resend Reminder</button>
+              <button class="btn btn-small btn-danger" data-action="disconnect" data-id="${c.id}">Disconnection Notice</button>
+            </div>
+          </td>`;
         discBody.appendChild(tr);
       } else if (c.status !== 'paid') {
         const tr = document.createElement('tr');
-        tr.innerHTML = commonRow + `
+        tr.innerHTML = common + `
           <td>
-            <button class="btn btn-small btn-soft" data-action="reminder" data-id="${c.id}">Reminder</button>
-            <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${c.id}">Mark Paid</button>
-          </td>
-        `;
+            <div class="actions">
+              <button class="btn btn-small btn-soft" data-action="reminder" data-id="${c.id}">Reminder</button>
+              <button class="btn btn-small btn-success" data-action="toggleStatus" data-id="${c.id}">Mark Paid</button>
+            </div>
+          </td>`;
         pendingBody.appendChild(tr);
       }
     });
@@ -1067,7 +902,7 @@
     }
   });
 
-  document.body.addEventListener('click', async (e) => {
+  document.body.addEventListener('click', async e => {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
     const id = btn.getAttribute('data-id');
@@ -1100,7 +935,6 @@
 
         const body = { name, email, phone: mac, amount, dueDate, wifi };
         await apiSend(`/api/clients/${id}`, 'PUT', body);
-
         Object.assign(client, body);
         renderAll();
       }
@@ -1129,13 +963,13 @@
     let message = '';
 
     if (type === 'receipt') {
-      subject = `Payment Receipt - AirFiber Internet`;
+      subject = 'Payment Receipt - AirFiber Internet';
       message = `Hi ${client.name}, this is your official payment receipt for ₱${parseAmountStr(client.amount)} for your AirFiber Internet subscription.`;
     } else if (type === 'disconnection') {
-      subject = `Disconnection Notice - AirFiber Internet`;
+      subject = 'Disconnection Notice - AirFiber Internet';
       message = `Hi ${client.name}, your account is overdue. This is a disconnection notice for your AirFiber Internet subscription.`;
     } else {
-      subject = `Billing Reminder - AirFiber Internet`;
+      subject = 'Billing Reminder - AirFiber Internet';
       message = `Hi ${client.name}, this is your billing reminder for ₱${parseAmountStr(client.amount)} due on ${client.dueDate}.`;
     }
 
